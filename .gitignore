@@ -19,3 +19,6 @@ dist
 **/*.DS_Store
 .metals
 .vscode
+.bloop/
+project/.bloop/
+project/metals.sbt
