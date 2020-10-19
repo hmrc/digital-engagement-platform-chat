@@ -17,11 +17,11 @@
 package uk.gov.hmrc.connectors
 
 import javax.inject.Inject
-import play.api.libs.json.JsValue
 import uk.gov.hmrc.config.ApplicationConfig
 import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Future}
 
 class WebChatConnector @Inject()(httpGet: HttpGet, config: ApplicationConfig) {
 
@@ -30,9 +30,8 @@ class WebChatConnector @Inject()(httpGet: HttpGet, config: ApplicationConfig) {
     val response: Future[HttpResponse] = httpGet.GET[HttpResponse](config.serviceUrl)
     response.map(f =>
       f.status match {
-        case 200 => {
-          Right(f.body)
-        }
+        case 200 =>  Right(f.body)
+        case _ => Left("Request failed")
       }
     )
   }

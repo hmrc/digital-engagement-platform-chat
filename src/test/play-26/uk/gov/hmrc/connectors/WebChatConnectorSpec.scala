@@ -22,17 +22,15 @@ import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike
 import org.scalatestplus.mockito.MockitoSugar.mock
 import uk.gov.hmrc.config.ApplicationConfig
-import uk.gov.hmrc.hello.HelloWorld
-import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException, HttpGet, HttpResponse}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
 
 class WebChatConnectorSpec extends WordSpecLike {
-  "When working on play 2.6" should {
-    "consume build from 2.6" in {
+  "Webchat connector" should {
+    "consider a 200 as a success and pass on the response body" in {
       when {
          httpGet.GET[HttpResponse](any())(any(),any(),any())
       } thenReturn {
@@ -42,6 +40,18 @@ class WebChatConnectorSpec extends WordSpecLike {
       val result = Await.result(webChatConnector.getElements(),Duration.Inf)
 
       result shouldBe Right("<div>Test</div>")
+    }
+
+    "consider any other response statuses as a failed request" in {
+      when {
+        httpGet.GET[HttpResponse](any())(any(),any(),any())
+      } thenReturn {
+        Future.successful(HttpResponse(400,""))
+      }
+
+      val result = Await.result(webChatConnector.getElements(),Duration.Inf)
+
+      result shouldBe Left("Request failed")
     }
   }
 
