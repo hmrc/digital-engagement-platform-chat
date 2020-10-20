@@ -22,7 +22,7 @@ import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike
 import org.scalatestplus.mockito.MockitoSugar.mock
 import uk.gov.hmrc.config.ApplicationConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException, HttpGet, HttpResponse, Request}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, HttpGet, HttpResponse, Request}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
@@ -32,7 +32,7 @@ class WebChatConnectorSpec extends WordSpecLike {
   "Webchat connector" should {
     "consider a 200 as a success and pass on the response body" in {
       when {
-         httpGet.GET[HttpResponse](any())(any(),any(),any())
+        httpClient.GET[HttpResponse](any())(any(),any(),any())
       } thenReturn {
         Future.successful(HttpResponse(200,"<div>Test</div>"))
       }
@@ -44,7 +44,7 @@ class WebChatConnectorSpec extends WordSpecLike {
 
     "consider any other response statuses as a failed request" in {
       when {
-        httpGet.GET[HttpResponse](any())(any(),any(),any())
+        httpClient.GET[HttpResponse](any())(any(),any(),any())
       } thenReturn {
         Future.successful(HttpResponse(400,""))
       }
@@ -56,7 +56,7 @@ class WebChatConnectorSpec extends WordSpecLike {
   }
 
   implicit val hc: HeaderCarrier = new HeaderCarrier
-  val httpGet = mock[HttpGet]
+  val httpClient = mock[HttpClient]
   val config = mock[ApplicationConfig]
-  val webChatConnector = new WebChatConnector(httpGet,config)
+  val webChatConnector = new WebChatConnector(httpClient,config)
 }
