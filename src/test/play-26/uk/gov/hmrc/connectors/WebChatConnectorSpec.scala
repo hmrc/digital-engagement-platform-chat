@@ -22,7 +22,7 @@ import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike
 import org.scalatestplus.mockito.MockitoSugar.mock
 import uk.gov.hmrc.config.ApplicationConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException, HttpGet, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException, HttpGet, HttpResponse, Request}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}

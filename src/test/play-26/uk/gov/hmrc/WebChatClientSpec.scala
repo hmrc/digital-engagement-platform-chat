@@ -21,35 +21,56 @@ import org.mockito.Mockito._
 import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike
 import org.scalatestplus.mockito.MockitoSugar.mock
-import play.api.Configuration
+import play.mvc.Http
+import play.api.mvc.Request
+import play.twirl.api.Html
 import uk.gov.hmrc.config.ApplicationConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException, HttpGet, HttpResponse}
+import uk.gov.hmrc.connectors.WebChatConnector
+import uk.gov.hmrc.http.{HeaderCarrier}
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, Future }
 
 
 class WebChatClientSpec extends WordSpecLike {
   "Webchat client" when {
-    "requesting webchat elements" should {
-      "return all elements" in {
+    "requesting webchat elements is successful" should {
+      "return all elements as HTML" in {
           when {
-            httpGet.GET[HttpResponse](any())(any(),any(),any())
+            webChatConnector.getElements()
           } thenReturn {
-            Future.successful(HttpResponse(200,"<div>Test</div>"))
+            Future.successful(Right("<div>Test</div>"))
           }
 
-          val webChatClient = new WebChatClient(configuration: Configuration)
+          val webChatClient = new WebChatClient(webChatConnector)
 
-          val result = Await.result(webChatClient.getElements());
+          val result = Await.result(webChatClient.getElements(),Duration.Inf);
 
-          result shouldBe "<div>Test</div>"
+          result shouldBe Some(Html("<div>Test</div>"))
+      }
+    }
+
+    "requesting webchat elements fails" should {
+      "return None" in {
+        when {
+          webChatConnector.getElements()
+        } thenReturn {
+          Future.successful(Left("Request failed"))
+        }
+
+        val webChatClient = new WebChatClient(webChatConnector)
+
+        val result = Await.result(webChatClient.getElements(),Duration.Inf);
+
+        result shouldBe None
       }
     }
   }
 
   implicit val hc: HeaderCarrier = new HeaderCarrier
-  val httpGet = mock[HttpGet]
+  implicit val request: Request[_] = mock[Request[_]]
+  implicit val global = scala.concurrent.ExecutionContext.Implicits.global
+
+  val webChatConnector = mock[WebChatConnector]
   val config = mock[ApplicationConfig]
-  val webChatConnector = new WebChatConnector(httpGet,config)
 }
