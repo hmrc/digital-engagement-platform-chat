@@ -27,9 +27,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class WebChatClient @Inject()(webChatConnector: WebChatConnector) {
   def getElements()(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Html]] = {
-    webChatConnector.getElements().map(response => response match {
-      case Right(t) => Some(Html(t))
-      case _ => None
-    })
+    webChatConnector.getElements().map { response =>
+      response match {
+        case Right(t) => Some(Html(t))
+        case _ => None
+      }
+    }
   }
 }

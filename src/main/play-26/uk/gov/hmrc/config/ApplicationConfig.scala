@@ -20,5 +20,5 @@ import javax.inject.Inject
 import play.api.Configuration
 
 class ApplicationConfig @Inject()(configuration: Configuration) {
-  lazy val serviceUrl : String = configuration.get[Service](("microservice.services.digital-engagement-plaftform-partials")) + "/webchat"
+  lazy val serviceUrl : String = configuration.get[Service]("microservice.services.digital-engagement-plaftform-partials") + "/webchat"
 }
