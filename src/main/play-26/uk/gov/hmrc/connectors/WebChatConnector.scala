@@ -18,12 +18,13 @@ package uk.gov.hmrc.connectors
 
 import javax.inject.Inject
 import uk.gov.hmrc.config.ApplicationConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class WebChatConnector @Inject()(http: HttpClient, config: ApplicationConfig) {
+class WebChatConnector @Inject()(http: DefaultHttpClient, config: ApplicationConfig) {
 
   def getElements()(implicit hc: HeaderCarrier): Future[Either[String, String]] = {
     http.GET[HttpResponse](config.serviceUrl).map(response => response.status match {

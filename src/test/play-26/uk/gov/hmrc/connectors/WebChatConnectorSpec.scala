@@ -22,8 +22,8 @@ import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike
 import org.scalatestplus.mockito.MockitoSugar.mock
 import uk.gov.hmrc.config.ApplicationConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, HttpGet, HttpResponse, Request}
-
+import uk.gov.hmrc.http.{HeaderCarrier,HttpResponse}
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
@@ -56,7 +56,7 @@ class WebChatConnectorSpec extends WordSpecLike {
   }
 
   implicit val hc: HeaderCarrier = new HeaderCarrier
-  val httpClient = mock[HttpClient]
+  val httpClient = mock[DefaultHttpClient]
   val config = mock[ApplicationConfig]
   val webChatConnector = new WebChatConnector(httpClient,config)
 }
