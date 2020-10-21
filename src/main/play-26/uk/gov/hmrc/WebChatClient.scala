@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.hello
+package uk.gov.hmrc.client
 
-import org.scalatest.Matchers._
-import org.scalatest.WordSpecLike
+import javax.inject.Inject
+import play.api.mvc.Request
+import play.twirl.api.Html
+import uk.gov.hmrc.connectors.WebChatConnector
+import uk.gov.hmrc.http.HeaderCarrier
+
+import scala.concurrent.{ExecutionContext, Future}
 
 
-class HelloWorldSpecs extends WordSpecLike {
-
-  "When working on play 2.6" should {
-
-    "consume build from 2.6" in {
-      HelloWorld.sayHello shouldBe "2.6"
+class WebChatClient @Inject()(webChatConnector: WebChatConnector) {
+  def getElements()(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Html]] = {
+    webChatConnector.getElements().map { response =>
+      response match {
+        case Right(t) => Some(Html(t))
+        case _ => None
+      }
     }
   }
 }

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.hello
+package uk.gov.hmrc.config
 
-object HelloWorld {
+import javax.inject.Inject
+import play.api.Configuration
 
-  def sayHello:String = "2.6"
+class ApplicationConfig @Inject()(configuration: Configuration) {
+  lazy val serviceUrl : String = configuration.get[Service]("microservice.services.digital-engagement-plaftform-partials") + "/webchat"
 }

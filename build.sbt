@@ -20,7 +20,8 @@ lazy val library = Project(appName, file("."))
 val sharedLibs = Seq(
   "com.typesafe.play" %% "play-test" % PlayCrossCompilation.version % "test",
   "org.scalatest" %% "scalatest" % "3.0.8" % "test",
-  "uk.gov.hmrc" %% "http-verbs-play-26" % "11.7.0"
+  "uk.gov.hmrc" %% "http-verbs-play-26" % "11.7.0",
+  "org.mockito" % "mockito-core" % "3.5.13" % "test"
 )
 
 val compilePlay26 = Seq(
