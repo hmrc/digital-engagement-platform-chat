@@ -21,12 +21,11 @@ import uk.gov.hmrc.config.ApplicationConfig
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class WebChatConnector @Inject()(http: DefaultHttpClient, config: ApplicationConfig) {
 
-  def getElements()(implicit hc: HeaderCarrier): Future[Either[String, String]] = {
+  def getElements()(implicit hc: HeaderCarrier,ec: ExecutionContext): Future[Either[String, String]] = {
     http.GET[HttpResponse](config.serviceUrl).map(response => response.status match {
         case 200 =>  Right(response.body)
         case _ => Left("Request failed")

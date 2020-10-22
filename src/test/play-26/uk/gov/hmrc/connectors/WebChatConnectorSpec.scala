@@ -26,6 +26,7 @@ import uk.gov.hmrc.http.{HeaderCarrier,HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class WebChatConnectorSpec extends WordSpecLike {
