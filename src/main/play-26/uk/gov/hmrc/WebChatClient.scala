@@ -17,16 +17,15 @@
 package uk.gov.hmrc.client
 
 import javax.inject.Inject
-import play.api.mvc.Request
+import play.api.mvc.{MessagesControllerComponents, Request}
 import play.twirl.api.Html
 import uk.gov.hmrc.connectors.WebChatConnector
-import uk.gov.hmrc.http.HeaderCarrier
-
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class WebChatClient @Inject()(webChatConnector: WebChatConnector) {
-  def getElements()(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Html]] = {
+class WebChatClient @Inject()(webChatConnector: WebChatConnector,mcc: MessagesControllerComponents)(implicit ec: ExecutionContext) extends FrontendController(mcc) {
+  def getElements()(implicit request: Request[_]): Future[Option[Html]] = {
     webChatConnector.getElements().map { response =>
       response match {
         case Right(t) => Some(Html(t))

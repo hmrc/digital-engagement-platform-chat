@@ -22,14 +22,15 @@ import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.mvc.Http
-import play.api.mvc.Request
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Request}
+import play.api.test.FakeRequest
 import play.twirl.api.Html
 import uk.gov.hmrc.config.ApplicationConfig
 import uk.gov.hmrc.connectors.WebChatConnector
-import uk.gov.hmrc.http.{HeaderCarrier}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future }
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 
 class WebChatClientSpec extends WordSpecLike {
@@ -37,12 +38,12 @@ class WebChatClientSpec extends WordSpecLike {
     "requesting webchat elements is successful" should {
       "return all elements as HTML" in {
           when {
-            webChatConnector.getElements()
+            webChatConnector.getElements()(any(),any())
           } thenReturn {
             Future.successful(Right("<div>Test</div>"))
           }
 
-          val webChatClient = new WebChatClient(webChatConnector)
+          val webChatClient = new WebChatClient(webChatConnector,mcc)(global)
 
           val result = Await.result(webChatClient.getElements(),Duration.Inf);
 
@@ -53,12 +54,12 @@ class WebChatClientSpec extends WordSpecLike {
     "requesting webchat elements fails" should {
       "return None" in {
         when {
-          webChatConnector.getElements()
+          webChatConnector.getElements()(any(),any())
         } thenReturn {
           Future.successful(Left("Request failed"))
         }
 
-        val webChatClient = new WebChatClient(webChatConnector)
+        val webChatClient = new WebChatClient(webChatConnector,mcc)(global)
 
         val result = Await.result(webChatClient.getElements(),Duration.Inf);
 
@@ -67,10 +68,9 @@ class WebChatClientSpec extends WordSpecLike {
     }
   }
 
-  implicit val hc: HeaderCarrier = new HeaderCarrier
-  implicit val request: Request[_] = mock[Request[_]]
   implicit val global = scala.concurrent.ExecutionContext.Implicits.global
-
+  implicit val  fakeRequest = FakeRequest("GET","/test").withHeaders("test"->"test")
+  val mcc = mock[MessagesControllerComponents]
   val webChatConnector = mock[WebChatConnector]
   val config = mock[ApplicationConfig]
 }
