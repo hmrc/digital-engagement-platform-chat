@@ -27,10 +27,9 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import uk.gov.hmrc.config.ApplicationConfig
 import uk.gov.hmrc.connectors.WebChatConnector
-import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{Await, Future}
 
 
 class WebChatClientSpec extends WordSpecLike {
@@ -69,7 +68,7 @@ class WebChatClientSpec extends WordSpecLike {
   }
 
   implicit val global = scala.concurrent.ExecutionContext.Implicits.global
-  implicit val  fakeRequest = FakeRequest("GET","/test").withHeaders("test"->"test")
+  implicit val  fakeRequest = FakeRequest("GET","/test")
   val mcc = mock[MessagesControllerComponents]
   val webChatConnector = mock[WebChatConnector]
   val config = mock[ApplicationConfig]
