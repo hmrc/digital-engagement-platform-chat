@@ -21,56 +21,60 @@ import org.mockito.Mockito._
 import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike
 import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.mvc.Http
-import play.api.mvc.Request
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Request}
+import play.api.test.FakeRequest
 import play.twirl.api.Html
 import uk.gov.hmrc.config.ApplicationConfig
-import uk.gov.hmrc.connectors.WebChatConnector
-import uk.gov.hmrc.http.{HeaderCarrier}
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future }
+import scala.concurrent.{Await, Future}
 
 
 class WebChatClientSpec extends WordSpecLike {
   "Webchat client" when {
+    val builder = new GuiceApplicationBuilder().configure(
+      "microservice.services.digital-engagement-platform-partials.host" -> "localhost",
+      "microservice.services.digital-engagement-platform-partials.port" ->1111,
+      "microservice.services.digital-engagement-platform-partials.protocol" -> "http",
+      "microservice.services.digital-engagement-platform-partials.refreshAfter" -> 5,
+      "microservice.services.digital-engagement-platform-partials.expireAfter" -> 5
+    )
+    val configuration = new ApplicationConfig(builder.configuration)
+
     "requesting webchat elements is successful" should {
       "return all elements as HTML" in {
           when {
-            webChatConnector.getElements()
+            cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/webchat")
           } thenReturn {
-            Future.successful(Right("<div>Test</div>"))
+            Html("<div>Test</div>")
           }
 
-          val webChatClient = new WebChatClient(webChatConnector)
+          val webChatClient = new WebChatClient(cacheRepository,configuration)
 
-          val result = Await.result(webChatClient.getElements(),Duration.Inf);
-
-          result shouldBe Some(Html("<div>Test</div>"))
+          webChatClient.getElements() shouldBe Some(Html("<div>Test</div>"))
       }
     }
 
-    "requesting webchat elements fails" should {
-      "return None" in {
+    "there is no data returned" should {
+      "return a None that will indicate the user that there is something wrong" in {
         when {
-          webChatConnector.getElements()
+          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/webchat")
         } thenReturn {
-          Future.successful(Left("Request failed"))
+          Html("")
         }
 
-        val webChatClient = new WebChatClient(webChatConnector)
+        val webChatClient = new WebChatClient(cacheRepository,configuration)
 
-        val result = Await.result(webChatClient.getElements(),Duration.Inf);
-
-        result shouldBe None
+        webChatClient.getElements() shouldBe None
       }
     }
   }
 
-  implicit val hc: HeaderCarrier = new HeaderCarrier
-  implicit val request: Request[_] = mock[Request[_]]
   implicit val global = scala.concurrent.ExecutionContext.Implicits.global
-
-  val webChatConnector = mock[WebChatConnector]
+  implicit val  fakeRequest = FakeRequest("GET","/test")
+  val mcc = mock[MessagesControllerComponents]
+  val cacheRepository = mock[CacheRepository]
   val config = mock[ApplicationConfig]
 }

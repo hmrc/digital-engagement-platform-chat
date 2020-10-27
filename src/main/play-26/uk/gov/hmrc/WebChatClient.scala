@@ -16,22 +16,41 @@
 
 package uk.gov.hmrc.client
 
+import java.util.concurrent.TimeUnit.SECONDS
+
+import akka.actor.ActorSystem
 import javax.inject.Inject
-import play.api.mvc.Request
+import play.api.libs.ws.WSClient
+import play.api.mvc.{Request}
 import play.twirl.api.Html
-import uk.gov.hmrc.connectors.WebChatConnector
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.config.ApplicationConfig
+import uk.gov.hmrc.http.hooks.HttpHook
+import uk.gov.hmrc.http.{CoreGet, HttpGet}
+import uk.gov.hmrc.play.http.ws.WSGet
+import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
+import scala.concurrent.duration.Duration
 
-import scala.concurrent.{ExecutionContext, Future}
 
-
-class WebChatClient @Inject()(webChatConnector: WebChatConnector) {
-  def getElements()(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Html]] = {
-    webChatConnector.getElements().map { response =>
-      response match {
-        case Right(t) => Some(Html(t))
-        case _ => None
-      }
-    }
+class WebChatClient @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig) {
+  def getElements()(implicit request: Request[_]): Option[Html] = {
+    val result = cacheRepository.getPartialContent(appConfig.serviceUrl)
+    if (result.body.isEmpty) None else Some(result)
   }
+}
+
+class CacheRepository @Inject()(wsclient: WSClient,
+                                appConfig: ApplicationConfig,
+                                playActorSystem: ActorSystem)
+  extends CachedStaticHtmlPartialRetriever {
+
+  override val httpGet : CoreGet = new HttpGet with WSGet {
+    override protected def actorSystem: ActorSystem = playActorSystem
+    override lazy val configuration = Some(appConfig.underlying)
+    override val hooks: Seq[HttpHook] = NoneRequired
+
+    override def wsClient: WSClient = wsclient
+  }
+
+  override def refreshAfter: Duration = Duration(appConfig.refreshSeconds, SECONDS)
+  override def expireAfter: Duration = Duration(appConfig.expireSeconds, SECONDS)
 }
