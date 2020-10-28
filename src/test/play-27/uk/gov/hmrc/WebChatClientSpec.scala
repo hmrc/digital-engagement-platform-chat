@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.client
 
+import config.ApplicationConfig
 import org.mockito.Mockito._
 import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike
@@ -24,11 +25,11 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
 import play.twirl.api.Html
-import uk.gov.hmrc.config.ApplicationConfig
+import repositories.CacheRepository
 
 
 class WebChatClientSpec extends WordSpecLike {
-  "Webchat client for 2.7" when {
+  "Webchat client for PLAY 2.7" when {
     val builder = new GuiceApplicationBuilder().configure(
       "microservice.services.digital-engagement-platform-partials.host" -> "localhost",
       "microservice.services.digital-engagement-platform-partials.port" ->1111,

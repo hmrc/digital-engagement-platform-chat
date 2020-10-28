@@ -16,19 +16,11 @@
 
 package uk.gov.hmrc.client
 
-import java.util.concurrent.TimeUnit.SECONDS
-
-import akka.actor.ActorSystem
+import config.ApplicationConfig
 import javax.inject.Inject
-import play.api.libs.ws.WSClient
-import play.api.mvc.{Request}
+import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.config.ApplicationConfig
-import uk.gov.hmrc.http.hooks.HttpHook
-import uk.gov.hmrc.http.{CoreGet, HttpGet}
-import uk.gov.hmrc.play.http.ws.WSGet
-import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
-import scala.concurrent.duration.Duration
+import repositories.CacheRepository
 
 
 class WebChatClient @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig) {
@@ -36,21 +28,4 @@ class WebChatClient @Inject()(cacheRepository: CacheRepository, appConfig: Appli
     val result = cacheRepository.getPartialContent(appConfig.serviceUrl)
     if (result.body.isEmpty) None else Some(result)
   }
-}
-
-class CacheRepository @Inject()(wsclient: WSClient,
-                                appConfig: ApplicationConfig,
-                                playActorSystem: ActorSystem)
-  extends CachedStaticHtmlPartialRetriever {
-
-  override val httpGet : CoreGet = new HttpGet with WSGet {
-    override protected def actorSystem: ActorSystem = playActorSystem
-    override lazy val configuration = Some(appConfig.underlying)
-    override val hooks: Seq[HttpHook] = NoneRequired
-
-    override def wsClient: WSClient = wsclient
-  }
-
-  override def refreshAfter: Duration = Duration(appConfig.refreshSeconds, SECONDS)
-  override def expireAfter: Duration = Duration(appConfig.expireSeconds, SECONDS)
 }
