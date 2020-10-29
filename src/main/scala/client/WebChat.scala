@@ -40,12 +40,12 @@ import repositories.CacheRepository
 
 
 abstract class WebChat @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig) {
-  def getElements()(implicit request: Request[_]): Option[Html] = {
+  def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
     val result = cacheRepository.getPartialContent(appConfig.serviceUrl)
     if (result.body.isEmpty) None else Some(result)
   }
 
-  def getTargetDiv(id: String = "HMRC_Fixed_1") : Html = {
+  def loadWebChatContainer(id: String = "HMRC_Fixed_1") : Html = {
     Html(s"""<div id="$id"></div>""")
   }
 }

@@ -49,7 +49,7 @@ class WebChatClientSpec extends WordSpecLike {
 
           val webChatClient = new WebChatClient(cacheRepository,configuration)
 
-          webChatClient.getElements() shouldBe Some(Html("<div>Test</div>"))
+          webChatClient.loadRequiredElements() shouldBe Some(Html("<div>Test</div>"))
         }
       }
 
@@ -63,7 +63,7 @@ class WebChatClientSpec extends WordSpecLike {
 
           val webChatClient = new WebChatClient(cacheRepository,configuration)
 
-          webChatClient.getElements() shouldBe None
+          webChatClient.loadRequiredElements() shouldBe None
         }
       }
     }
@@ -72,13 +72,13 @@ class WebChatClientSpec extends WordSpecLike {
       "Return the html element" in {
         val webChatClient = new WebChatClient(cacheRepository,configuration)
 
-        webChatClient.getTargetDiv() shouldBe Html("""<div id="HMRC_Fixed_1"></div>""")
+        webChatClient.loadWebChatContainer() shouldBe Html("""<div id="HMRC_Fixed_1"></div>""")
       }
 
       "Allow a custom id" in {
         val webChatClient = new WebChatClient(cacheRepository,configuration)
 
-        val result : Html = webChatClient.getTargetDiv("myId")
+        val result : Html = webChatClient.loadWebChatContainer("myId")
 
         result shouldBe Html("""<div id="myId"></div>""")
       }
