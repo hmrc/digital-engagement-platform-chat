@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.hello
+package config
 
-import org.scalatest.Matchers._
-import org.scalatest.WordSpecLike
+import javax.inject.Inject
+import play.api.Configuration
 
-
-class HelloWorldSpecs extends WordSpecLike {
-
-  "When working on 2.7" should {
-
-    "consume build from 2.7" in {
-      HelloWorld.sayHello shouldBe "2.7"
-    }
-  }
+class ApplicationConfig @Inject()(configuration: Configuration) {
+  val path = "microservice.services.digital-engagement-platform-partials"
+  lazy val serviceUrl : String = configuration.get[Service](path) + "/engagement-platform-partials/webchat"
+  lazy val refreshSeconds : Int = configuration.getOptional[Int](s"$path.refreshAfter").getOrElse(60)
+  lazy val expireSeconds : Int = configuration.getOptional[Int](s"$path.expireAfter").getOrElse(3600)
+  lazy val underlying = configuration.underlying
 }

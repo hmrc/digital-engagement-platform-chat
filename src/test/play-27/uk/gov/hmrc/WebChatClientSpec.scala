@@ -26,8 +26,9 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import repositories.CacheRepository
 
+
 class WebChatClientSpec extends WordSpecLike {
-  "Webchat client for PLAY 2.6" when {
+  "Webchat client for PLAY 2.7" when {
     val builder = new GuiceApplicationBuilder().configure(
       "microservice.services.digital-engagement-platform-partials.host" -> "localhost",
       "microservice.services.digital-engagement-platform-partials.port" ->1111,
@@ -36,6 +37,7 @@ class WebChatClientSpec extends WordSpecLike {
       "microservice.services.digital-engagement-platform-partials.expireAfter" -> 5
     )
     val configuration = new ApplicationConfig(builder.configuration)
+
     "Requesting webchat elements" when {
       "the request is successful" should {
         "return all elements as HTML" in {

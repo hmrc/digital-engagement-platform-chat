@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.config
+package config
 
 import play.api.{ConfigLoader, Configuration}
 

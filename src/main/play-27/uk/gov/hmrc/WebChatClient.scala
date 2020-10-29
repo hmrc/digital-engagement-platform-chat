@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.hello
+package uk.gov.hmrc.client
 
-object HelloWorld {
+import client.WebChat
+import config.ApplicationConfig
+import javax.inject.Inject
+import repositories.CacheRepository
 
-  def sayHello:String = "2.7"
-}
+class WebChatClient @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig) extends WebChat(cacheRepository, appConfig)
+
