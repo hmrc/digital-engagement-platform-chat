@@ -39,8 +39,9 @@ class WebChatClientSpec extends WordSpecLike {
     )
     val configuration = new ApplicationConfig(builder.configuration)
 
-    "requesting webchat elements is successful" should {
-      "return all elements as HTML" in {
+    "Requesting webchat elements" when {
+      "the request is successful" should {
+        "return all elements as HTML" in {
           when {
             cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/webchat")
           } thenReturn {
@@ -50,20 +51,37 @@ class WebChatClientSpec extends WordSpecLike {
           val webChatClient = new WebChatClient(cacheRepository,configuration)
 
           webChatClient.getElements() shouldBe Some(Html("<div>Test</div>"))
+        }
+      }
+
+      "there is no data returned" should {
+        "return a None that will indicate the user that there is something wrong" in {
+          when {
+            cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/webchat")
+          } thenReturn {
+            Html("")
+          }
+
+          val webChatClient = new WebChatClient(cacheRepository,configuration)
+
+          webChatClient.getElements() shouldBe None
+        }
       }
     }
 
-    "there is no data returned" should {
-      "return a None that will indicate the user that there is something wrong" in {
-        when {
-          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/webchat")
-        } thenReturn {
-          Html("")
-        }
-
+    "Requesting tag div element" should {
+      "Return the html element" in {
         val webChatClient = new WebChatClient(cacheRepository,configuration)
 
-        webChatClient.getElements() shouldBe None
+        webChatClient.getTargetDiv() shouldBe Html("""<div id="HMRC_Fixed_1"></div>""")
+      }
+
+      "Allow a custom id" in {
+        val webChatClient = new WebChatClient(cacheRepository,configuration)
+
+        val result : Html = webChatClient.getTargetDiv("myId")
+
+        result shouldBe Html("""<div id="myId"></div>""")
       }
     }
   }

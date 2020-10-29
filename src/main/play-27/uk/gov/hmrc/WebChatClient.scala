@@ -17,17 +17,12 @@
 package uk.gov.hmrc.client
 
 
+import client.WebChat
 import config.ApplicationConfig
 import javax.inject.Inject
-import play.api.mvc.Request
-import play.twirl.api.Html
 import repositories.CacheRepository
 
 
 
-class WebChatClient @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig) {
-  def getElements()(implicit request: Request[_]): Option[Html] = {
-    val result = cacheRepository.getPartialContent(appConfig.serviceUrl)
-    if (result.body.isEmpty) None else Some(result)
-  }
-}
+class WebChatClient @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig) extends WebChat(cacheRepository, appConfig)
+
