@@ -22,7 +22,6 @@ import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import repositories.CacheRepository
@@ -88,7 +87,6 @@ class WebChatClientSpec extends WordSpecLike {
 
   implicit val global = scala.concurrent.ExecutionContext.Implicits.global
   implicit val  fakeRequest = FakeRequest("GET","/test")
-  val mcc = mock[MessagesControllerComponents]
   val cacheRepository = mock[CacheRepository]
   val config = mock[ApplicationConfig]
 }
