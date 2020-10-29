@@ -16,13 +16,10 @@
 
 package uk.gov.hmrc.client
 
-
 import client.WebChat
 import config.ApplicationConfig
 import javax.inject.Inject
 import repositories.CacheRepository
-
-
 
 class WebChatClient @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig) extends WebChat(cacheRepository, appConfig)
 
