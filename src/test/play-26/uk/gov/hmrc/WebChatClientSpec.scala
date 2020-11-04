@@ -67,18 +67,28 @@ class WebChatClientSpec extends WordSpecLike {
     }
 
     "Requesting tag div element" should {
-      "Return the html element" in {
+      "Return the html element when we specify an id" in {
+        when {
+          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/test")
+        } thenReturn {
+          Html("""<div id="test"></div>""")
+        }
+
         val webChatClient = new WebChatClient(cacheRepository,configuration)
 
-        webChatClient.loadWebChatContainer() shouldBe Html("""<div id="HMRC_Fixed_1"></div>""")
+        webChatClient.loadWebChatContainer("test") shouldBe Some(Html("""<div id="test"></div>"""))
       }
 
-      "Allow a custom id" in {
+      "Return the html element if no id is specified (default)" in {
+        when {
+          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/HMRC_Fixed_1")
+        } thenReturn {
+          Html("""<div id="HMRC_Fixed_1"></div>""")
+        }
+
         val webChatClient = new WebChatClient(cacheRepository,configuration)
 
-        val result : Html = webChatClient.loadWebChatContainer("myId")
-
-        result shouldBe Html("""<div id="myId"></div>""")
+        webChatClient.loadWebChatContainer() shouldBe Some(Html("""<div id="HMRC_Fixed_1"></div>"""))
       }
     }
   }
