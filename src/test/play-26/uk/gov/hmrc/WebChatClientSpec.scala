@@ -25,6 +25,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import repositories.CacheRepository
+import utils.SessionIdExtractor
 
 class WebChatClientSpec extends WordSpecLike {
   "Webchat client for PLAY 2.6" when {
@@ -40,12 +41,12 @@ class WebChatClientSpec extends WordSpecLike {
       "the request is successful" should {
         "return all elements as HTML" in {
           when {
-            cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/local/webchat")
+            cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/unknown/webchat")
           } thenReturn {
             Html("<div>Test</div>")
           }
 
-          val webChatClient = new WebChatClient(cacheRepository,configuration)
+          val webChatClient = new WebChatClient(cacheRepository,configuration,sessionIdExtractor)
 
           webChatClient.loadRequiredElements() shouldBe Some(Html("<div>Test</div>"))
         }
@@ -54,12 +55,12 @@ class WebChatClientSpec extends WordSpecLike {
       "there is no data returned" should {
         "return a None that will indicate the user that there is something wrong" in {
           when {
-            cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/local/webchat")
+            cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/unknown/webchat")
           } thenReturn {
             Html("")
           }
 
-          val webChatClient = new WebChatClient(cacheRepository,configuration)
+          val webChatClient = new WebChatClient(cacheRepository,configuration,sessionIdExtractor)
 
           webChatClient.loadRequiredElements() shouldBe None
         }
@@ -69,24 +70,24 @@ class WebChatClientSpec extends WordSpecLike {
     "Requesting tag div element" should {
       "Return the html element when we specify an id" in {
         when {
-          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/local/test")
+          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/unknown/test")
         } thenReturn {
           Html("""<div id="test"></div>""")
         }
 
-        val webChatClient = new WebChatClient(cacheRepository,configuration)
+        val webChatClient = new WebChatClient(cacheRepository,configuration,sessionIdExtractor)
 
         webChatClient.loadWebChatContainer("test") shouldBe Some(Html("""<div id="test"></div>"""))
       }
 
       "Return the html element if no id is specified (default)" in {
         when {
-          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/local/HMRC_Fixed_1")
+          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/unknown/HMRC_Fixed_1")
         } thenReturn {
           Html("""<div id="HMRC_Fixed_1"></div>""")
         }
 
-        val webChatClient = new WebChatClient(cacheRepository,configuration)
+        val webChatClient = new WebChatClient(cacheRepository,configuration,sessionIdExtractor)
 
         webChatClient.loadWebChatContainer() shouldBe Some(Html("""<div id="HMRC_Fixed_1"></div>"""))
       }
@@ -97,4 +98,5 @@ class WebChatClientSpec extends WordSpecLike {
   implicit val  fakeRequest = FakeRequest("GET","/test")
   val cacheRepository = mock[CacheRepository]
   val config = mock[ApplicationConfig]
+  val sessionIdExtractor = new SessionIdExtractor();
 }

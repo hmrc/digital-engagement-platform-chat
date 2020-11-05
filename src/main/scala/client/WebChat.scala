@@ -21,18 +21,16 @@ import javax.inject.Inject
 import play.api.mvc.Request
 import play.twirl.api.Html
 import repositories.CacheRepository
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import utils.SessionIdExtractor
 
-abstract class WebChat @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig) {
+abstract class WebChat @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig, sessionIdExtractor: SessionIdExtractor) {
   def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
-    val headers = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, request = Some(request))
-    val result = cacheRepository.getPartialContent(s"${appConfig.serviceUrl}${headers.sessionId.fold("local")(_.value)}/webchat")
+    val result = cacheRepository.getPartialContent(s"${appConfig.serviceUrl}${sessionIdExtractor.get(request)}/webchat")
     if (result.body.isEmpty) None else Some(result)
   }
 
   def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html] = {
-    val headers = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, request = Some(request))
-    val result = cacheRepository.getPartialContent(s"${appConfig.serviceUrl}tag-element/${headers.sessionId.fold("local")(_.value)}/$id")
+    val result = cacheRepository.getPartialContent(s"${appConfig.serviceUrl}tag-element/${sessionIdExtractor.get(request)}/$id")
     if (result.body.isEmpty) None else Some(result)
   }
 }
