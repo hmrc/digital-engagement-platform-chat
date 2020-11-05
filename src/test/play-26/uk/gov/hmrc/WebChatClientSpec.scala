@@ -40,7 +40,7 @@ class WebChatClientSpec extends WordSpecLike {
       "the request is successful" should {
         "return all elements as HTML" in {
           when {
-            cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/webchat")
+            cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/local/webchat")
           } thenReturn {
             Html("<div>Test</div>")
           }
@@ -54,7 +54,7 @@ class WebChatClientSpec extends WordSpecLike {
       "there is no data returned" should {
         "return a None that will indicate the user that there is something wrong" in {
           when {
-            cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/webchat")
+            cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/local/webchat")
           } thenReturn {
             Html("")
           }
@@ -69,7 +69,7 @@ class WebChatClientSpec extends WordSpecLike {
     "Requesting tag div element" should {
       "Return the html element when we specify an id" in {
         when {
-          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/test")
+          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/local/test")
         } thenReturn {
           Html("""<div id="test"></div>""")
         }
@@ -81,7 +81,7 @@ class WebChatClientSpec extends WordSpecLike {
 
       "Return the html element if no id is specified (default)" in {
         when {
-          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/HMRC_Fixed_1")
+          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/local/HMRC_Fixed_1")
         } thenReturn {
           Html("""<div id="HMRC_Fixed_1"></div>""")
         }
