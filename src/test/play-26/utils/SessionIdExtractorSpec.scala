@@ -42,7 +42,7 @@ class SessionIdExtractorSpec extends WordSpecLike {
 
         val result = sessionIdExtractor.get(fakeRequest);
 
-        result shouldBe "unknown"
+        result shouldBe "none"
       }
     }
   }

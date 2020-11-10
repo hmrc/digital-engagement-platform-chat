@@ -22,6 +22,6 @@ import uk.gov.hmrc.play.HeaderCarrierConverter
 class SessionIdExtractor {
   def get(request: Request[_]) : String = {
     val headers = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, session = Some(request.session))
-    headers.sessionId.fold("unknown")(_.value)
+    headers.sessionId.fold("none")(_.value)
   }
 }

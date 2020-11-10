@@ -36,13 +36,13 @@ class SessionIdExtractorSpec extends WordSpecLike {
     }
 
     "There is no session Id" should {
-      "Return `unknown`" in {
+      "Return `none`" in {
         val fakeRequest = FakeRequest("GET","/test")
         val sessionIdExtractor = new SessionIdExtractor();
 
         val result = sessionIdExtractor.get(fakeRequest);
 
-        result shouldBe "unknown"
+        result shouldBe "none"
       }
     }
   }
