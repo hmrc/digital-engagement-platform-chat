@@ -16,19 +16,20 @@
 
 package uk.gov.hmrc.client
 
-import config.ApplicationConfig
+import config.WebChatConfig
 import org.mockito.Mockito._
 import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import repositories.CacheRepository
 import utils.SessionIdExtractor
 
 class WebChatClientSpec extends WordSpecLike {
-  "Webchat client for PLAY 2.6" when {
+  "Webchat client" when {
     val builder = new GuiceApplicationBuilder().configure(
       "microservice.services.digital-engagement-platform-partials.host" -> "localhost",
       "microservice.services.digital-engagement-platform-partials.port" ->1111,
@@ -36,8 +37,13 @@ class WebChatClientSpec extends WordSpecLike {
       "microservice.services.digital-engagement-platform-partials.refreshAfter" -> 5,
       "microservice.services.digital-engagement-platform-partials.expireAfter" -> 5
     )
-    val configuration = new ApplicationConfig(builder.configuration)
-    "Requesting webchat elements" when {
+
+    val configuration = new WebChatConfig(builder.configuration)
+    val cacheRepository = mock[CacheRepository]
+    val sessionIdExtractor = new SessionIdExtractor();
+    implicit val  fakeRequest: Request[_] = FakeRequest("GET","/test")
+
+    "requesting webchat elements" when {
       "the request is successful" should {
         "return all elements as HTML" in {
           when {
@@ -67,8 +73,8 @@ class WebChatClientSpec extends WordSpecLike {
       }
     }
 
-    "Requesting tag div element" should {
-      "Return the html element when we specify an id" in {
+    "requesting tag div element" should {
+      "return the html element when we specify an id" in {
         when {
           cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/none/test")
         } thenReturn {
@@ -80,7 +86,7 @@ class WebChatClientSpec extends WordSpecLike {
         webChatClient.loadWebChatContainer("test") shouldBe Some(Html("""<div id="test"></div>"""))
       }
 
-      "Return the html element if no id is specified (default)" in {
+      "return the html element if no id is specified (default)" in {
         when {
           cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/none/HMRC_Fixed_1")
         } thenReturn {
@@ -93,10 +99,4 @@ class WebChatClientSpec extends WordSpecLike {
       }
     }
   }
-
-  implicit val global = scala.concurrent.ExecutionContext.Implicits.global
-  implicit val  fakeRequest = FakeRequest("GET","/test")
-  val cacheRepository = mock[CacheRepository]
-  val config = mock[ApplicationConfig]
-  val sessionIdExtractor = new SessionIdExtractor();
 }

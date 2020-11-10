@@ -19,7 +19,7 @@ package repositories
 import java.util.concurrent.TimeUnit.SECONDS
 
 import akka.actor.ActorSystem
-import config.ApplicationConfig
+import config.WebChatConfig
 import javax.inject.Inject
 import play.api.libs.ws.WSClient
 import uk.gov.hmrc.http.{CoreGet, HttpGet}
@@ -30,7 +30,7 @@ import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
 import scala.concurrent.duration.Duration
 
 class CacheRepository @Inject()(wsclient: WSClient,
-                                appConfig: ApplicationConfig,
+                                appConfig: WebChatConfig,
                                 playActorSystem: ActorSystem)
   extends CachedStaticHtmlPartialRetriever {
 

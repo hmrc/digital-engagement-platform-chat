@@ -16,13 +16,17 @@
 
 package config
 
+import com.typesafe.config.Config
 import javax.inject.Inject
 import play.api.Configuration
 
-class ApplicationConfig @Inject()(configuration: Configuration) {
-  val path = "microservice.services.digital-engagement-platform-partials"
+class WebChatConfig @Inject()(configuration: Configuration) {
+  private val defaultRefreshSeconds = 60
+  private val defaultExpireSeconds = 3600
+  private val path = "microservice.services.digital-engagement-platform-partials"
+
   lazy val serviceUrl : String = configuration.get[Service](path) + "/engagement-platform-partials/"
-  lazy val refreshSeconds : Int = configuration.getOptional[Int](s"$path.refreshAfter").getOrElse(60)
-  lazy val expireSeconds : Int = configuration.getOptional[Int](s"$path.expireAfter").getOrElse(3600)
-  lazy val underlying = configuration.underlying
+  lazy val refreshSeconds : Int = configuration.getOptional[Int](s"$path.refreshAfter").getOrElse(defaultRefreshSeconds)
+  lazy val expireSeconds : Int = configuration.getOptional[Int](s"$path.expireAfter").getOrElse(defaultExpireSeconds)
+  lazy val underlying: Config = configuration.underlying
 }
