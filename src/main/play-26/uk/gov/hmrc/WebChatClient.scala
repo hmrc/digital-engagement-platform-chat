@@ -20,5 +20,6 @@ import client.WebChat
 import config.ApplicationConfig
 import javax.inject.Inject
 import repositories.CacheRepository
+import utils.SessionIdExtractor
 
-class WebChatClient @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig) extends WebChat(cacheRepository, appConfig)
+class WebChatClient @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig, sessionIdExtractor: SessionIdExtractor) extends WebChat(cacheRepository, appConfig, sessionIdExtractor)

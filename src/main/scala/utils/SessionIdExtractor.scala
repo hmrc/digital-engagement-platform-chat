@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.client
+package utils
 
-import client.WebChat
-import config.ApplicationConfig
-import javax.inject.Inject
-import repositories.CacheRepository
-import utils.SessionIdExtractor
+import play.api.mvc.Request
+import uk.gov.hmrc.play.HeaderCarrierConverter
 
-class WebChatClient @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig, sessionIdExtractor: SessionIdExtractor) extends WebChat(cacheRepository, appConfig, sessionIdExtractor)
-
+class SessionIdExtractor {
+  def get(request: Request[_]) : String = {
+    val headers = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, session = Some(request.session))
+    headers.sessionId.fold("none")(_.value)
+  }
+}
