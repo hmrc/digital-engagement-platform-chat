@@ -16,21 +16,10 @@
 
 package client
 
-import config.ApplicationConfig
-import javax.inject.Inject
 import play.api.mvc.Request
 import play.twirl.api.Html
-import repositories.CacheRepository
-import utils.SessionIdExtractor
 
-abstract class WebChat @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig, sessionIdExtractor: SessionIdExtractor) {
-  def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
-    val result = cacheRepository.getPartialContent(s"${appConfig.serviceUrl}${sessionIdExtractor.get(request)}/webchat")
-    if (result.body.isEmpty) None else Some(result)
-  }
-
-  def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html] = {
-    val result = cacheRepository.getPartialContent(s"${appConfig.serviceUrl}tag-element/${sessionIdExtractor.get(request)}/$id")
-    if (result.body.isEmpty) None else Some(result)
-  }
+trait WebChat {
+  def loadRequiredElements()(implicit request: Request[_]): Option[Html]
+  def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html]
 }

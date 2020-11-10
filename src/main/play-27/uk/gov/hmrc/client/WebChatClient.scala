@@ -16,11 +16,14 @@
 
 package uk.gov.hmrc.client
 
-import client.WebChat
-import config.ApplicationConfig
+import client.WebChatBase
+import config.WebChatConfig
 import javax.inject.Inject
 import repositories.CacheRepository
 import utils.SessionIdExtractor
 
-class WebChatClient @Inject()(cacheRepository: CacheRepository, appConfig: ApplicationConfig, sessionIdExtractor: SessionIdExtractor) extends WebChat(cacheRepository, appConfig, sessionIdExtractor)
+class WebChatClient @Inject()(cacheRepository: CacheRepository,
+                              appConfig: WebChatConfig,
+                              sessionIdExtractor: SessionIdExtractor)
+  extends WebChatBase(cacheRepository, appConfig, sessionIdExtractor)
 

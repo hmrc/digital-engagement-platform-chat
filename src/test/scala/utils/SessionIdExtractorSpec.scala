@@ -21,7 +21,6 @@ import org.scalatest.WordSpecLike
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.SessionKeys
 
-
 class SessionIdExtractorSpec extends WordSpecLike {
   "Session Id extractor" when {
     "There is a session Id" should {
