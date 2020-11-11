@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package client
+package uk.gov.hmrc.webchat.client
 
-import config.WebChatConfig
+import uk.gov.hmrc.webchat.config.WebChatConfig
 import javax.inject.Inject
 import play.api.mvc.Request
 import play.twirl.api.Html
-import repositories.CacheRepository
-import utils.SessionIdExtractor
+import uk.gov.hmrc.webchat.repositories.CacheRepository
+import uk.gov.hmrc.webchat.utils.SessionIdExtractor
 
 class WebChatBase @Inject()(cacheRepository: CacheRepository,
                             appConfig: WebChatConfig,
-                            sessionIdExtractor: SessionIdExtractor) extends WebChat {
+                            sessionIdExtractor: SessionIdExtractor) extends WebChatClient {
   def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
     val result = cacheRepository.getPartialContent(s"${appConfig.serviceUrl}${sessionIdExtractor.get(request)}/webchat")
     if (result.body.isEmpty) None else Some(result)

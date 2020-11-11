@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package config
+package uk.gov.hmrc.webchat.config
 
 import play.api.{ConfigLoader, Configuration}
 

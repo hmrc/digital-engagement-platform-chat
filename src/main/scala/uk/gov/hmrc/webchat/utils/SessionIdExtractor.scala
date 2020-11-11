@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package utils
+package uk.gov.hmrc.webchat.utils
 
 import play.api.mvc.Request
 import uk.gov.hmrc.play.HeaderCarrierConverter

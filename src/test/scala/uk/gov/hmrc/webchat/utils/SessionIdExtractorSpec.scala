@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package utils
+package uk.gov.hmrc.webchat.utils
 
 import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike

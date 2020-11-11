@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.client
+package uk.gov.hmrc.webchat.client
 
-import client.WebChatBase
-import config.WebChatConfig
 import javax.inject.Inject
-import repositories.CacheRepository
-import utils.SessionIdExtractor
+import uk.gov.hmrc.webchat.config.WebChatConfig
+import uk.gov.hmrc.webchat.repositories.CacheRepository
+import uk.gov.hmrc.webchat.utils.SessionIdExtractor
 
-class WebChatClient @Inject()(cacheRepository: CacheRepository,
-                              appConfig: WebChatConfig,
-                              sessionIdExtractor: SessionIdExtractor)
+class WebChatClientImpl @Inject()(cacheRepository: CacheRepository,
+                                  appConfig: WebChatConfig,
+                                  sessionIdExtractor: SessionIdExtractor)
   extends WebChatBase(cacheRepository, appConfig, sessionIdExtractor)
+

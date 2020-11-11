@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.client
+package uk.gov.hmrc.webchat.repositories
 
-import client.WebChatBase
-import config.WebChatConfig
-import javax.inject.Inject
-import repositories.CacheRepository
-import utils.SessionIdExtractor
+import uk.gov.hmrc.http.HeaderCarrier
 
-class WebChatClient @Inject()(cacheRepository: CacheRepository,
-                              appConfig: WebChatConfig,
-                              sessionIdExtractor: SessionIdExtractor)
-  extends WebChatBase(cacheRepository, appConfig, sessionIdExtractor)
+case class CacheKey(url: String, hc: HeaderCarrier) {
+  private val sessionId: String = hc.sessionId.fold("")(_.value)
+  private val hashCodeValue = (url + sessionId).hashCode
 
+  override def hashCode(): Int = hashCodeValue
+
+  override def equals(obj: Any): Boolean = {
+    obj match {
+      case key: CacheKey => url == key.url && sessionId == key.sessionId
+      case _ => false
+    }
+  }
+}

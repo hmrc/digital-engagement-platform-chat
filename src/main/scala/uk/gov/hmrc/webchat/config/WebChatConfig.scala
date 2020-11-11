@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package config
+package uk.gov.hmrc.webchat.config
 
 import com.typesafe.config.Config
 import javax.inject.Inject

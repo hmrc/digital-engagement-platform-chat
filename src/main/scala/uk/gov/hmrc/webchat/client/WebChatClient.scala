@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package client
+package uk.gov.hmrc.webchat.client
 
+import com.google.inject.ImplementedBy
 import play.api.mvc.Request
 import play.twirl.api.Html
 
-trait WebChat {
+@ImplementedBy(classOf[WebChatClientImpl])
+trait WebChatClient {
   def loadRequiredElements()(implicit request: Request[_]): Option[Html]
   def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html]
 }

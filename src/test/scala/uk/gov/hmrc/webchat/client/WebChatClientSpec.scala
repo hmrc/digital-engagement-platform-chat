@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.client
+package uk.gov.hmrc.webchat.client
 
-import config.WebChatConfig
+import uk.gov.hmrc.webchat.config.WebChatConfig
 import org.mockito.Mockito._
 import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike
@@ -25,11 +25,11 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.twirl.api.Html
-import repositories.CacheRepository
-import utils.SessionIdExtractor
+import uk.gov.hmrc.webchat.repositories.CacheRepository
+import uk.gov.hmrc.webchat.utils.SessionIdExtractor
 
 class WebChatClientSpec extends WordSpecLike {
-  "Webchat client" when {
+  "Webchat uk.gov.hmrc.webchat.client" when {
     val builder = new GuiceApplicationBuilder().configure(
       "microservice.services.digital-engagement-platform-partials.host" -> "localhost",
       "microservice.services.digital-engagement-platform-partials.port" ->1111,
@@ -43,6 +43,13 @@ class WebChatClientSpec extends WordSpecLike {
     val sessionIdExtractor = new SessionIdExtractor();
     implicit val  fakeRequest: Request[_] = FakeRequest("GET","/test")
 
+    "constructing" should {
+      "be able to get as injected instance" ignore {
+        val webChat = builder.injector().instanceOf[WebChatClient]
+        webChat should not be null
+      }
+    }
+
     "requesting webchat elements" when {
       "the request is successful" should {
         "return all elements as HTML" in {
@@ -52,7 +59,7 @@ class WebChatClientSpec extends WordSpecLike {
             Html("<div>Test</div>")
           }
 
-          val webChatClient = new WebChatClient(cacheRepository,configuration,sessionIdExtractor)
+          val webChatClient = new WebChatClientImpl(cacheRepository,configuration,sessionIdExtractor)
 
           webChatClient.loadRequiredElements() shouldBe Some(Html("<div>Test</div>"))
         }
@@ -66,7 +73,7 @@ class WebChatClientSpec extends WordSpecLike {
             Html("")
           }
 
-          val webChatClient = new WebChatClient(cacheRepository,configuration,sessionIdExtractor)
+          val webChatClient = new WebChatClientImpl(cacheRepository,configuration,sessionIdExtractor)
 
           webChatClient.loadRequiredElements() shouldBe None
         }
@@ -81,7 +88,7 @@ class WebChatClientSpec extends WordSpecLike {
           Html("""<div id="test"></div>""")
         }
 
-        val webChatClient = new WebChatClient(cacheRepository,configuration,sessionIdExtractor)
+        val webChatClient = new WebChatClientImpl(cacheRepository,configuration,sessionIdExtractor)
 
         webChatClient.loadWebChatContainer("test") shouldBe Some(Html("""<div id="test"></div>"""))
       }
@@ -93,7 +100,7 @@ class WebChatClientSpec extends WordSpecLike {
           Html("""<div id="HMRC_Fixed_1"></div>""")
         }
 
-        val webChatClient = new WebChatClient(cacheRepository,configuration,sessionIdExtractor)
+        val webChatClient = new WebChatClientImpl(cacheRepository,configuration,sessionIdExtractor)
 
         webChatClient.loadWebChatContainer() shouldBe Some(Html("""<div id="HMRC_Fixed_1"></div>"""))
       }
