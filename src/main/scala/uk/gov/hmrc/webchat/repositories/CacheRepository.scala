@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit.SECONDS
 import com.google.common.base.Ticker
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import javax.inject.Inject
+import play.api.Environment
+import play.api.inject.Injector
 import play.api.mvc.RequestHeader
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.http.{CoreGet, HeaderCarrier}
@@ -32,14 +34,24 @@ import uk.gov.hmrc.webchat.config.WebChatConfig
 import scala.concurrent.duration.{Duration, _}
 import scala.concurrent.{Await, ExecutionContext}
 
-class CacheRepository @Inject()(httpGet: CoreGet,
-                                webChatConfig: WebChatConfig)
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
+
+class CacheRepository @Inject()(environment: Environment,
+                                webChatConfig: WebChatConfig,
+                                injector: Injector)
                                (implicit ec: ExecutionContext) {
 
-  val maximumEntries: Int = webChatConfig.maxCacheEntries
-  val refreshAfter: Duration = Duration(webChatConfig.refreshSeconds, SECONDS)
-  val expireAfter: Duration = Duration(webChatConfig.expireSeconds, SECONDS)
-  val partialRetrievalTimeout: Duration = (webChatConfig.retrievalTimeout, SECONDS)
+  private val maximumEntries: Int = webChatConfig.maxCacheEntries
+  private val refreshAfter: Duration = Duration(webChatConfig.refreshSeconds, SECONDS)
+  private val expireAfter: Duration = Duration(webChatConfig.expireSeconds, SECONDS)
+  private val partialRetrievalTimeout: Duration = (webChatConfig.retrievalTimeout, SECONDS)
+  private val httpGet: CoreGet = {
+    val bindingClass: Class[CoreGet] =
+      environment.classLoader
+        .loadClass(webChatConfig.coreGetClass)
+        .asInstanceOf[Class[CoreGet]]
+    injector.instanceOf[CoreGet](bindingClass)
+  }
 
   def getPartialContent(url: String, errorMessage: Html = HtmlFormat.empty)(implicit request: RequestHeader): Html = {
     val hc = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, Some(request.session), Some(request))
@@ -47,14 +59,14 @@ class CacheRepository @Inject()(httpGet: CoreGet,
     loadPartial(key).successfulContentOrElse(errorMessage)
   }
 
-  protected def loadPartial(key: CacheKey)(implicit request: RequestHeader): HtmlPartial =
+  private def loadPartial(key: CacheKey)(implicit request: RequestHeader): HtmlPartial =
     try {
       cache.get(key)
     } catch {
       case _: Exception => HtmlPartial.Failure()
     }
 
-  private def fetchPartial(key: CacheKey): HtmlPartial = {
+  private def cacheFetchPartial(key: CacheKey): HtmlPartial = {
     implicit val hc: HeaderCarrier = key.hc
     Await.result(httpGet.GET[HtmlPartial](key.url).recover(HtmlPartial.connectionExceptionsAsHtmlPartialFailure), partialRetrievalTimeout)
   }
@@ -67,20 +79,11 @@ class CacheRepository @Inject()(httpGet: CoreGet,
       .expireAfterWrite(expireAfter.toMillis, TimeUnit.MILLISECONDS)
       .build(new CacheLoader[CacheKey, HtmlPartial.Success]() {
         def load(key: CacheKey): HtmlPartial.Success =
-          fetchPartial(key) match {
+          cacheFetchPartial(key) match {
           case s: HtmlPartial.Success => s
-          case f: HtmlPartial.Failure    => throw new RuntimeException("Could not load partial")
+          case f: HtmlPartial.Failure    => throw new RuntimeException(s"Could not load partial: $f")
         }
       })
 
   private val cacheTicker =  Ticker.systemTicker()
-
-//  override val httpGet : CoreGet = new HttpGet with WSGet {
-//    override protected def actorSystem: ActorSystem = playActorSystem
-//    override lazy val configuration = Some(appConfig.underlying)
-//    override val hooks: Seq[HttpHook] = NoneRequired
-//
-//    override def wsClient: WSClient = wsclient
-//  }
-
 }

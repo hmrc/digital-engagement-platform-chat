@@ -105,6 +105,7 @@ class WebChatConfigSpec extends WordSpecLike {
         |           retrievalTimeout = 15
         |           maxEntries = 500
         |        }
+        |        coreGetClass = "frontend.httpClient"
         |      }
         |    }
         |}
@@ -116,6 +117,43 @@ class WebChatConfigSpec extends WordSpecLike {
       webChatConfig.refreshSeconds shouldBe 4
       webChatConfig.expireSeconds shouldBe 42
       webChatConfig.maxCacheEntries shouldBe 500
+    }
+
+    "default coreGet class name" in {
+      val configFile =
+        """
+          |microservice {
+          |    services {
+          |      digital-engagement-platform-partials {
+          |        host = localhost
+          |        port = 9109
+          |      }
+          |    }
+          |}
+          |""".stripMargin
+
+      val webChatConfig = configFromFile(configFile)
+
+      webChatConfig.coreGetClass shouldBe "uk.gov.hmrc.play.bootstrap.http.HttpClient"
+    }
+
+    "read coreGet class name" in {
+      val configFile =
+        """
+          |microservice {
+          |    services {
+          |      digital-engagement-platform-partials {
+          |        host = localhost
+          |        port = 9109
+          |        coreGetClass = "my.custom.coreGetClass"
+          |      }
+          |    }
+          |}
+          |""".stripMargin
+
+      val webChatConfig = configFromFile(configFile)
+
+      webChatConfig.coreGetClass shouldBe "my.custom.coreGetClass"
     }
   }
 }

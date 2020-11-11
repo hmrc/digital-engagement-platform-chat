@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.webchat.config
 
+import com.typesafe.config.Config
 import javax.inject.Inject
 import play.api.Configuration
 
@@ -24,6 +25,7 @@ class WebChatConfig @Inject()(configuration: Configuration) {
   private val defaultExpireSeconds = 3600
   private val defaultRetrievalTimeoutSeconds = 20
   private val defaultMaxCacheEntries = 1000
+  private val defaultCoreGetClass = "uk.gov.hmrc.play.bootstrap.http.HttpClient"
 
   private val path = "microservice.services.digital-engagement-platform-partials"
 
@@ -32,4 +34,6 @@ class WebChatConfig @Inject()(configuration: Configuration) {
   lazy val expireSeconds : Int = configuration.getOptional[Int](s"$path.cache.expireAfter").getOrElse(defaultExpireSeconds)
   lazy val retrievalTimeout : Int = configuration.getOptional[Int](s"$path.cache.retrievalTimeout").getOrElse(defaultRetrievalTimeoutSeconds)
   lazy val maxCacheEntries : Int = configuration.getOptional[Int](s"$path.cache.maxEntries").getOrElse(defaultMaxCacheEntries)
+  lazy val coreGetClass: String = configuration.getOptional[String](s"$path.coreGetClass").getOrElse(defaultCoreGetClass)
+  def underlying: Config = configuration.underlying
 }

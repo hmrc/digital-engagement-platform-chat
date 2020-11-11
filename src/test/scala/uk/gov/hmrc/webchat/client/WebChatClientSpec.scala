@@ -31,6 +31,7 @@ import uk.gov.hmrc.webchat.utils.SessionIdExtractor
 class WebChatClientSpec extends WordSpecLike {
   "Webchat client" when {
     val builder = new GuiceApplicationBuilder().configure(
+      "microservice.services.digital-engagement-platform-partials.coreGetClass" -> "uk.gov.hmrc.webchat.repositories.TestGet",
       "microservice.services.digital-engagement-platform-partials.host" -> "localhost",
       "microservice.services.digital-engagement-platform-partials.port" -> 1111,
       "microservice.services.digital-engagement-platform-partials.protocol" -> "http"
@@ -42,7 +43,7 @@ class WebChatClientSpec extends WordSpecLike {
     implicit val  fakeRequest: Request[_] = FakeRequest("GET","/test")
 
     "constructing" should {
-      "be able to get as injected instance" ignore {
+      "be able to get as injected instance" in {
         val webChat = builder.injector().instanceOf[WebChatClient]
         webChat should not be null
       }
