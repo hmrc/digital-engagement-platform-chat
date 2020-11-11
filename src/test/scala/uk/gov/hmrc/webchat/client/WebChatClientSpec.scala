@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.webchat.client
 
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito._
 import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike
@@ -27,7 +28,7 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import uk.gov.hmrc.webchat.config.WebChatConfig
 import uk.gov.hmrc.webchat.repositories.CacheRepository
-import uk.gov.hmrc.webchat.utils.{SessionIdExtractor, TestCoreGet}
+import uk.gov.hmrc.webchat.utils.TestCoreGet
 
 class WebChatClientSpec extends WordSpecLike {
 
@@ -49,63 +50,72 @@ class WebChatClientSpec extends WordSpecLike {
     }
 
     val configuration = new WebChatConfig(builder.configuration)
-    val cacheRepository = mock[CacheRepository]
-    val sessionIdExtractor = new SessionIdExtractor();
     implicit val  fakeRequest: Request[_] = FakeRequest("GET","/test")
 
     "requesting webchat elements" when {
       "the request is successful" should {
         "return all elements as HTML" in {
+          val cacheRepository = mock[CacheRepository]
           when {
-            cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/none/webchat")
-          } thenReturn {
-            Html("<div>Test</div>")
-          }
+            cacheRepository.getPartialContent(any(), any())(any())
+          } thenReturn(Html("<div>Test</div>"))
 
-          val webChatClient = new WebChatClientImpl(cacheRepository, configuration, sessionIdExtractor)
+          val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
 
           webChatClient.loadRequiredElements() shouldBe Some(Html("<div>Test</div>"))
+          verify(cacheRepository).getPartialContent(
+            meq("http://localhost:1111/engagement-platform-partials/webchat"), any())(any())
         }
       }
 
       "there is no data returned" should {
         "return a None that will indicate the user that there is something wrong" in {
+          val cacheRepository = mock[CacheRepository]
           when {
-            cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/none/webchat")
-          } thenReturn {
-            Html("")
-          }
+            cacheRepository.getPartialContent(any(), any())(any())
+          } thenReturn(Html(""))
 
-          val webChatClient = new WebChatClientImpl(cacheRepository, configuration, sessionIdExtractor)
+          val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
 
           webChatClient.loadRequiredElements() shouldBe None
+
+          verify(cacheRepository).getPartialContent(
+            meq("http://localhost:1111/engagement-platform-partials/webchat"), any())(any())
         }
       }
     }
 
     "requesting tag div element" should {
       "return the html element when we specify an id" in {
+        val cacheRepository = mock[CacheRepository]
         when {
-          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/none/test")
+          cacheRepository.getPartialContent(any(), any())(any())
         } thenReturn {
           Html("""<div id="test"></div>""")
         }
 
-        val webChatClient = new WebChatClientImpl(cacheRepository, configuration, sessionIdExtractor)
+        val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
 
         webChatClient.loadWebChatContainer("test") shouldBe Some(Html("""<div id="test"></div>"""))
+
+        verify(cacheRepository).getPartialContent(
+          meq("http://localhost:1111/engagement-platform-partials/tag-element/test"), any())(any())
       }
 
       "return the html element if no id is specified (default)" in {
+        val cacheRepository = mock[CacheRepository]
         when {
-          cacheRepository.getPartialContent("http://localhost:1111/engagement-platform-partials/tag-element/none/HMRC_Fixed_1")
+          cacheRepository.getPartialContent(any(), any())(any())
         } thenReturn {
           Html("""<div id="HMRC_Fixed_1"></div>""")
         }
 
-        val webChatClient = new WebChatClientImpl(cacheRepository, configuration, sessionIdExtractor)
+        val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
 
         webChatClient.loadWebChatContainer() shouldBe Some(Html("""<div id="HMRC_Fixed_1"></div>"""))
+
+        verify(cacheRepository).getPartialContent(
+          meq("http://localhost:1111/engagement-platform-partials/tag-element/HMRC_Fixed_1"), any())(any())
       }
     }
   }

@@ -21,19 +21,17 @@ import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.webchat.config.WebChatConfig
 import uk.gov.hmrc.webchat.repositories.CacheRepository
-import uk.gov.hmrc.webchat.utils.SessionIdExtractor
 
 class WebChatClientImpl @Inject()(cacheRepository: CacheRepository,
-                                  appConfig: WebChatConfig,
-                                  sessionIdExtractor: SessionIdExtractor)
+                                  appConfig: WebChatConfig)
   extends WebChatClient {
   def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
-    val result = cacheRepository.getPartialContent(s"${appConfig.partialsBaseUrl}/${sessionIdExtractor.get(request)}/webchat")
+    val result = cacheRepository.getPartialContent(s"${appConfig.partialsBaseUrl}/webchat")
     if (result.body.isEmpty) None else Some(result)
   }
 
   def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html] = {
-    val result = cacheRepository.getPartialContent(s"${appConfig.partialsBaseUrl}/tag-element/${sessionIdExtractor.get(request)}/$id")
+    val result = cacheRepository.getPartialContent(s"${appConfig.partialsBaseUrl}/tag-element/$id")
     if (result.body.isEmpty) None else Some(result)
   }
 }
