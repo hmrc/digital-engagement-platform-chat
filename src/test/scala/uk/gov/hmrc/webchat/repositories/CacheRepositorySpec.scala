@@ -17,28 +17,23 @@
 package uk.gov.hmrc.webchat.repositories
 
 import org.scalatest.Matchers._
-import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatest.WordSpecLike
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, HttpReads}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
-
-import scala.concurrent.{ExecutionContext, Future}
-
-class TestGet extends CoreGet {
-  val coreGet: CoreGet = mock[CoreGet]
-  override def GET[A](url: String, queryParams: Seq[(String, String)], headers: Seq[(String, String)])
-                     (implicit rds: HttpReads[A], hc: HeaderCarrier, ec: ExecutionContext): Future[A] =
-    coreGet.GET[A](url, queryParams, headers)
-}
+import uk.gov.hmrc.webchat.utils.TestCoreGet
 
 class CacheRepositorySpec extends WordSpecLike {
+
+  private val mockedGet = mock[TestCoreGet]
+
   private val builder = new GuiceApplicationBuilder().configure(
-    "microservice.services.digital-engagement-platform-partials.coreGetClass" -> "uk.gov.hmrc.webchat.repositories.TestGet",
+    "microservice.services.digital-engagement-platform-partials.coreGetClass" -> "uk.gov.hmrc.webchat.utils.TestCoreGet",
     "microservice.services.digital-engagement-platform-partials.host" -> "localhost",
     "microservice.services.digital-engagement-platform-partials.port" -> 1111,
     "microservice.services.digital-engagement-platform-partials.protocol" -> "http"
+  ).overrides(
+    bind[TestCoreGet].toInstance(mockedGet)
   )
 
   "CacheRepository" should {

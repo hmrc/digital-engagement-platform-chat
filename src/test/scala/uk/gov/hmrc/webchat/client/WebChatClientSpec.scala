@@ -16,31 +16,30 @@
 
 package uk.gov.hmrc.webchat.client
 
-import uk.gov.hmrc.webchat.config.WebChatConfig
 import org.mockito.Mockito._
 import org.scalatest.Matchers._
 import org.scalatest.WordSpecLike
 import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.twirl.api.Html
+import uk.gov.hmrc.webchat.config.WebChatConfig
 import uk.gov.hmrc.webchat.repositories.CacheRepository
-import uk.gov.hmrc.webchat.utils.SessionIdExtractor
+import uk.gov.hmrc.webchat.utils.{SessionIdExtractor, TestCoreGet}
 
 class WebChatClientSpec extends WordSpecLike {
+
   "Webchat client" when {
     val builder = new GuiceApplicationBuilder().configure(
-      "microservice.services.digital-engagement-platform-partials.coreGetClass" -> "uk.gov.hmrc.webchat.repositories.TestGet",
+      "microservice.services.digital-engagement-platform-partials.coreGetClass" -> "uk.gov.hmrc.webchat.utils.TestCoreGet",
       "microservice.services.digital-engagement-platform-partials.host" -> "localhost",
       "microservice.services.digital-engagement-platform-partials.port" -> 1111,
       "microservice.services.digital-engagement-platform-partials.protocol" -> "http"
+    ).overrides(
+      bind[TestCoreGet].toInstance(mock[TestCoreGet])   // for case where we test injected instance
     )
-
-    val configuration = new WebChatConfig(builder.configuration)
-    val cacheRepository = mock[CacheRepository]
-    val sessionIdExtractor = new SessionIdExtractor();
-    implicit val  fakeRequest: Request[_] = FakeRequest("GET","/test")
 
     "constructing" should {
       "be able to get as injected instance" in {
@@ -48,6 +47,11 @@ class WebChatClientSpec extends WordSpecLike {
         webChat should not be null
       }
     }
+
+    val configuration = new WebChatConfig(builder.configuration)
+    val cacheRepository = mock[CacheRepository]
+    val sessionIdExtractor = new SessionIdExtractor();
+    implicit val  fakeRequest: Request[_] = FakeRequest("GET","/test")
 
     "requesting webchat elements" when {
       "the request is successful" should {
