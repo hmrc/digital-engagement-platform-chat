@@ -36,7 +36,7 @@ class CacheRepository @Inject()(httpGet: CoreGet,
                                 webChatConfig: WebChatConfig)
                                (implicit ec: ExecutionContext) {
 
-  val maximumEntries: Int = 1000
+  val maximumEntries: Int = webChatConfig.maxCacheEntries
   val refreshAfter: Duration = Duration(webChatConfig.refreshSeconds, SECONDS)
   val expireAfter: Duration = Duration(webChatConfig.expireSeconds, SECONDS)
   val partialRetrievalTimeout: Duration = (webChatConfig.retrievalTimeout, SECONDS)
