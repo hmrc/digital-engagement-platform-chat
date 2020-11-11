@@ -16,17 +16,20 @@
 
 package uk.gov.hmrc.webchat.config
 
-import com.typesafe.config.Config
 import javax.inject.Inject
 import play.api.Configuration
 
 class WebChatConfig @Inject()(configuration: Configuration) {
   private val defaultRefreshSeconds = 60
   private val defaultExpireSeconds = 3600
+  private val defaultRetrievalTimeoutSeconds = 20
+  private val defaultMaxCacheEntries = 1000
+
   private val path = "microservice.services.digital-engagement-platform-partials"
 
   lazy val serviceUrl : String = configuration.get[Service](path) + "/engagement-platform-partials/"
-  lazy val refreshSeconds : Int = configuration.getOptional[Int](s"$path.refreshAfter").getOrElse(defaultRefreshSeconds)
-  lazy val expireSeconds : Int = configuration.getOptional[Int](s"$path.expireAfter").getOrElse(defaultExpireSeconds)
-  lazy val underlying: Config = configuration.underlying
+  lazy val refreshSeconds : Int = configuration.getOptional[Int](s"$path.cache.refreshAfter").getOrElse(defaultRefreshSeconds)
+  lazy val expireSeconds : Int = configuration.getOptional[Int](s"$path.cache.expireAfter").getOrElse(defaultExpireSeconds)
+  lazy val retrievalTimeout : Int = configuration.getOptional[Int](s"$path.cache.retrievalTimeout").getOrElse(defaultRetrievalTimeoutSeconds)
+  lazy val maxCacheEntries : Int = configuration.getOptional[Int](s"$path.cache.maxEntries").getOrElse(defaultMaxCacheEntries)
 }

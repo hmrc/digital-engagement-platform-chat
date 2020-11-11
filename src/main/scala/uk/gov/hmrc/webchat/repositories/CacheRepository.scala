@@ -21,13 +21,13 @@ import java.util.concurrent.TimeUnit.SECONDS
 
 import com.google.common.base.Ticker
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
-import uk.gov.hmrc.webchat.config.WebChatConfig
 import javax.inject.Inject
 import play.api.mvc.RequestHeader
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.http.{CoreGet, HeaderCarrier}
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.partials.HtmlPartial
+import uk.gov.hmrc.webchat.config.WebChatConfig
 
 import scala.concurrent.duration.{Duration, _}
 import scala.concurrent.{Await, ExecutionContext}
@@ -39,7 +39,7 @@ class CacheRepository @Inject()(httpGet: CoreGet,
   val maximumEntries: Int = 1000
   val refreshAfter: Duration = Duration(webChatConfig.refreshSeconds, SECONDS)
   val expireAfter: Duration = Duration(webChatConfig.expireSeconds, SECONDS)
-  val partialRetrievalTimeout: Duration = 20.seconds
+  val partialRetrievalTimeout: Duration = (webChatConfig.retrievalTimeout, SECONDS)
 
   def getPartialContent(url: String, errorMessage: Html = HtmlFormat.empty)(implicit request: RequestHeader): Html = {
     val hc = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, Some(request.session), Some(request))
@@ -51,7 +51,7 @@ class CacheRepository @Inject()(httpGet: CoreGet,
     try {
       cache.get(key)
     } catch {
-      case e: Exception => HtmlPartial.Failure()
+      case _: Exception => HtmlPartial.Failure()
     }
 
   private def fetchPartial(key: CacheKey): HtmlPartial = {
