@@ -62,7 +62,7 @@ class WebChatClientSpec extends WordSpecLike {
             Html("<div>Test</div>")
           }
 
-          val webChatClient = new WebChatClientImpl(cacheRepository,configuration,sessionIdExtractor)
+          val webChatClient = new WebChatClientImpl(cacheRepository, configuration, sessionIdExtractor)
 
           webChatClient.loadRequiredElements() shouldBe Some(Html("<div>Test</div>"))
         }
@@ -76,7 +76,7 @@ class WebChatClientSpec extends WordSpecLike {
             Html("")
           }
 
-          val webChatClient = new WebChatClientImpl(cacheRepository,configuration,sessionIdExtractor)
+          val webChatClient = new WebChatClientImpl(cacheRepository, configuration, sessionIdExtractor)
 
           webChatClient.loadRequiredElements() shouldBe None
         }
@@ -91,7 +91,7 @@ class WebChatClientSpec extends WordSpecLike {
           Html("""<div id="test"></div>""")
         }
 
-        val webChatClient = new WebChatClientImpl(cacheRepository,configuration,sessionIdExtractor)
+        val webChatClient = new WebChatClientImpl(cacheRepository, configuration, sessionIdExtractor)
 
         webChatClient.loadWebChatContainer("test") shouldBe Some(Html("""<div id="test"></div>"""))
       }
@@ -103,7 +103,7 @@ class WebChatClientSpec extends WordSpecLike {
           Html("""<div id="HMRC_Fixed_1"></div>""")
         }
 
-        val webChatClient = new WebChatClientImpl(cacheRepository,configuration,sessionIdExtractor)
+        val webChatClient = new WebChatClientImpl(cacheRepository, configuration, sessionIdExtractor)
 
         webChatClient.loadWebChatContainer() shouldBe Some(Html("""<div id="HMRC_Fixed_1"></div>"""))
       }

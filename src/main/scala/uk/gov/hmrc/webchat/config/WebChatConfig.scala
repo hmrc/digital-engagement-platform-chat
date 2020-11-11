@@ -29,7 +29,7 @@ class WebChatConfig @Inject()(configuration: Configuration) {
 
   private val path = "microservice.services.digital-engagement-platform-partials"
 
-  lazy val serviceUrl : String = configuration.get[Service](path) + "/engagement-platform-partials/"
+  lazy val partialsBaseUrl : String = configuration.get[Service](path) + "/engagement-platform-partials"
   lazy val refreshSeconds : Int = configuration.getOptional[Int](s"$path.cache.refreshAfter").getOrElse(defaultRefreshSeconds)
   lazy val expireSeconds : Int = configuration.getOptional[Int](s"$path.cache.expireAfter").getOrElse(defaultExpireSeconds)
   lazy val retrievalTimeout : Int = configuration.getOptional[Int](s"$path.cache.retrievalTimeout").getOrElse(defaultRetrievalTimeoutSeconds)

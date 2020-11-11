@@ -45,7 +45,7 @@ class WebChatConfigSpec extends WordSpecLike {
 
       val webChatConfig = configFromFile(configFile)
 
-      webChatConfig.serviceUrl shouldBe "http://localhost:9109/engagement-platform-partials/"
+      webChatConfig.partialsBaseUrl shouldBe "http://localhost:9109/engagement-platform-partials"
     }
 
     "populate protected url from services" in {
@@ -65,7 +65,7 @@ class WebChatConfigSpec extends WordSpecLike {
 
       val webChatConfig = configFromFile(configFile)
 
-      webChatConfig.serviceUrl shouldBe "https://digital-engagement-platform-partials.protected.mdtp:443/engagement-platform-partials/"
+      webChatConfig.partialsBaseUrl shouldBe "https://digital-engagement-platform-partials.protected.mdtp:443/engagement-platform-partials"
     }
 
     "default cache entries when not specified" in {
