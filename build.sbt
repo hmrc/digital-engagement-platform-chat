@@ -2,7 +2,6 @@ import sbt._
 
 val appName = "digital-engagement-platform-chat"
 
-
 lazy val library = Project(appName, file("."))
   .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning, SbtArtifactory)
   .settings(
