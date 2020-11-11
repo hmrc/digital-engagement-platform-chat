@@ -39,7 +39,7 @@ class CacheKeySpec extends WordSpecLike {
         keySession1 should not equal keySession2
         keySession1.hashCode() should not equal keySession2.hashCode()
       }
-      
+
       "url is different" in {
         val keyUrl1 = CacheKey("url1", HeaderCarrier(sessionId = Some(SessionId("session1"))))
         val keyUrl2 = CacheKey("url2", HeaderCarrier(sessionId = Some(SessionId("session1"))))

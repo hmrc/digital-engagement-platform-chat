@@ -20,7 +20,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 case class CacheKey(url: String, hc: HeaderCarrier) {
   private val sessionId: String = hc.sessionId.fold("")(_.value)
-  private val hashCodeValue = (url + sessionId).hashCode
+  private val hashCodeValue = s"$url+$sessionId".hashCode
 
   override def hashCode(): Int = hashCodeValue
 
