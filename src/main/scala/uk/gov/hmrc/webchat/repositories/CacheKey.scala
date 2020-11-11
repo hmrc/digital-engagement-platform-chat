@@ -20,13 +20,16 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 case class CacheKey(url: String, hc: HeaderCarrier) {
   private val sessionId: String = hc.sessionId.fold("")(_.value)
-  private val hashCodeValue = s"$url+$sessionId".hashCode
+  private val deviceId: String = hc.deviceID.getOrElse("")
+  private val hashCodeValue = s"$url+$sessionId+$deviceId".hashCode
 
   override def hashCode(): Int = hashCodeValue
 
   override def equals(obj: Any): Boolean = {
     obj match {
-      case key: CacheKey => url == key.url && sessionId == key.sessionId
+      case key: CacheKey => url == key.url &&
+        sessionId == key.sessionId &&
+        deviceId == key.deviceId
       case _ => false
     }
   }

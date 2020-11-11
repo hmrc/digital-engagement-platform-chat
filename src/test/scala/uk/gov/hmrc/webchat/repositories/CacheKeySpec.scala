@@ -25,9 +25,17 @@ import uk.gov.hmrc.http.logging.SessionId
 class CacheKeySpec extends WordSpecLike {
   "CacheKey" should {
     "support equality comparison" when {
-      "url and session are equal" in {
-        val key1 = CacheKey("url1", HeaderCarrier(sessionId = Some(SessionId("session1"))))
-        val key1Equal = CacheKey("url1", HeaderCarrier(sessionId = Some(SessionId("session1"))))
+      "url and session and device id are equal" in {
+        val key1 = CacheKey("url1", HeaderCarrier(sessionId = Some(SessionId("session1")), deviceID = Some("devid1")))
+        val key1Equal = CacheKey("url1", HeaderCarrier(sessionId = Some(SessionId("session1")), deviceID = Some("devid1")))
+
+        key1 shouldEqual key1Equal
+        key1.hashCode() shouldEqual key1Equal.hashCode()
+      }
+
+      "only url is specified" in {
+        val key1 = CacheKey("url1", HeaderCarrier())
+        val key1Equal = CacheKey("url1", HeaderCarrier())
 
         key1 shouldEqual key1Equal
         key1.hashCode() shouldEqual key1Equal.hashCode()
@@ -45,6 +53,13 @@ class CacheKeySpec extends WordSpecLike {
         val keyUrl2 = CacheKey("url2", HeaderCarrier(sessionId = Some(SessionId("session1"))))
         keyUrl1 should not equal keyUrl2
         keyUrl1.hashCode() should not equal keyUrl2.hashCode()
+      }
+
+      "device id is different" in {
+        val keyDevId1 = CacheKey("url1", HeaderCarrier(sessionId = Some(SessionId("session1")), deviceID = Some("devid1")))
+        val keyDevId2 = CacheKey("url1", HeaderCarrier(sessionId = Some(SessionId("session1")), deviceID = Some("devid2")))
+        keyDevId1 should not equal keyDevId2
+        keyDevId1.hashCode() should not equal keyDevId2.hashCode()
       }
     }
   }
