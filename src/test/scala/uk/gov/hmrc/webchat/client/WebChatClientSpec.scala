@@ -29,13 +29,11 @@ import uk.gov.hmrc.webchat.repositories.CacheRepository
 import uk.gov.hmrc.webchat.utils.SessionIdExtractor
 
 class WebChatClientSpec extends WordSpecLike {
-  "Webchat uk.gov.hmrc.webchat.client" when {
+  "Webchat client" when {
     val builder = new GuiceApplicationBuilder().configure(
       "microservice.services.digital-engagement-platform-partials.host" -> "localhost",
-      "microservice.services.digital-engagement-platform-partials.port" ->1111,
-      "microservice.services.digital-engagement-platform-partials.protocol" -> "http",
-      "microservice.services.digital-engagement-platform-partials.refreshAfter" -> 5,
-      "microservice.services.digital-engagement-platform-partials.expireAfter" -> 5
+      "microservice.services.digital-engagement-platform-partials.port" -> 1111,
+      "microservice.services.digital-engagement-platform-partials.protocol" -> "http"
     )
 
     val configuration = new WebChatConfig(builder.configuration)
