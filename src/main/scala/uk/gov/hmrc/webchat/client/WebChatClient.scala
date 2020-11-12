@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package utils
+package uk.gov.hmrc.webchat.client
 
+import com.google.inject.ImplementedBy
 import play.api.mvc.Request
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import play.twirl.api.Html
 
-class SessionIdExtractor {
-  def get(request: Request[_]) : String = {
-    val headers = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, session = Some(request.session))
-    headers.sessionId.fold("none")(_.value)
-  }
+@ImplementedBy(classOf[WebChatClientImpl])
+trait WebChatClient {
+  def loadRequiredElements()(implicit request: Request[_]): Option[Html]
+  def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html]
 }
