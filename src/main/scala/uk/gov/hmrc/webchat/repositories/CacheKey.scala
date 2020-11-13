@@ -19,18 +19,19 @@ package uk.gov.hmrc.webchat.repositories
 import uk.gov.hmrc.http.HeaderCarrier
 
 case class CacheKey(url: String, hc: HeaderCarrier) {
-  private val sessionId: String = hc.sessionId.fold("")(_.value)
-  private val deviceId: String = hc.deviceID.getOrElse("")
-  private val hashCodeValue = s"$url+$sessionId+$deviceId".hashCode
+  private val sessionId: String = hc.sessionId.fold("None")(_.value)
+  private val deviceId: String = hc.deviceID.getOrElse("None")
+  private val hashCodeValue = s"$url+$sessionId".hashCode
 
   override def hashCode(): Int = hashCodeValue
 
   override def equals(obj: Any): Boolean = {
     obj match {
       case key: CacheKey => url == key.url &&
-        sessionId == key.sessionId &&
-        deviceId == key.deviceId
+        sessionId == key.sessionId
       case _ => false
     }
   }
+
+  override def toString: String = s"CacheKey(url: $url, sessionId: $sessionId, deviceId: $deviceId)"
 }
