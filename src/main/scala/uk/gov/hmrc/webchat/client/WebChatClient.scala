@@ -19,6 +19,7 @@ package uk.gov.hmrc.webchat.client
 import com.google.inject.ImplementedBy
 import play.api.mvc.Request
 import play.twirl.api.Html
+import uk.gov.hmrc.webchat.internal.WebChatClientImpl
 
 @ImplementedBy(classOf[WebChatClientImpl])
 trait WebChatClient {
