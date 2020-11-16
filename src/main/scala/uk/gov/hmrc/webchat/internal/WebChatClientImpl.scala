@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.webchat.client
+package uk.gov.hmrc.webchat.internal
 
 import javax.inject.Inject
 import play.api.mvc.Request
 import play.twirl.api.Html
+import uk.gov.hmrc.webchat.client.WebChatClient
 import uk.gov.hmrc.webchat.config.WebChatConfig
 import uk.gov.hmrc.webchat.repositories.CacheRepository
 

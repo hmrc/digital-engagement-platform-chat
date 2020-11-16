@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.webchat.client
+package uk.gov.hmrc.webchat.testhelpers
 
-import com.google.inject.ImplementedBy
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.webchat.internal.WebChatClientImpl
+import uk.gov.hmrc.webchat.client.WebChatClient
 
-@ImplementedBy(classOf[WebChatClientImpl])
-trait WebChatClient {
-  def loadRequiredElements()(implicit request: Request[_]): Option[Html]
-  def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html]
+class WebChatClientStub extends WebChatClient {
+  override def loadRequiredElements()(implicit request: Request[_]): Option[Html] =
+    Some(Html("""<div id="WEBCHAT_TEST_RequiredElements"></div>"""))
+
+  override def loadWebChatContainer(id: String)(implicit request: Request[_]): Option[Html] =
+    Some(Html(s"""<div id="$id"></div>"""))
 }
+

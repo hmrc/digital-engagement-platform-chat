@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.webchat.client
+package uk.gov.hmrc.webchat.internal
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito._
@@ -26,11 +26,12 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.twirl.api.Html
+import uk.gov.hmrc.webchat.client.WebChatClient
 import uk.gov.hmrc.webchat.config.WebChatConfig
 import uk.gov.hmrc.webchat.repositories.CacheRepository
 import uk.gov.hmrc.webchat.utils.TestCoreGet
 
-class WebChatClientSpec extends WordSpecLike {
+class WebChatClientImplSpec extends WordSpecLike {
 
   "Webchat client" when {
     val builder = new GuiceApplicationBuilder().configure(
