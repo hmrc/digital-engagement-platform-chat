@@ -38,15 +38,18 @@ class CacheRepositorySpec extends WordSpecLike {
     "microservice.services.digital-engagement-platform-partials.coreGetClass" -> "uk.gov.hmrc.webchat.utils.TestCoreGet",
     "microservice.services.digital-engagement-platform-partials.host" -> "localhost",
     "microservice.services.digital-engagement-platform-partials.port" -> 1111,
-    "microservice.services.digital-engagement-platform-partials.protocol" -> "http"
+    "microservice.services.digital-engagement-platform-partials.protocol" -> "http",
+    "dep-webchat.container-ids" -> Seq("DesiredID")
   ).overrides(
     bind[TestCoreGet].toInstance(mockedGet)
   )
 
-  private val repository = builder.injector().instanceOf[CacheRepository]
+  private val expectedUrl = "http://localhost:1111/engagement-platform-partials/partials/%5B%22DesiredID%22%5D"
 
   "CacheRepository" should {
     "return required elements" in {
+      reset(mockedGet)
+      val repository = builder.injector().instanceOf[CacheRepository]
       val partialsJson = Json.obj(
         "REQUIRED" -> "<requiredpartial>"
       )
@@ -56,20 +59,27 @@ class CacheRepositorySpec extends WordSpecLike {
       val partial = repository.getRequiredPartial()
 
       partial shouldBe Html("<requiredpartial>")
+
+      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl))(any(), any(), any())
     }
 
     "return None when no required elements" in {
-      val partialsJson = Json.obj(
-      )
+      reset(mockedGet)
+      val repository = builder.injector().instanceOf[CacheRepository]
+      val partialsJson = Json.obj()
       when(mockedGet.GET[JsValue](any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
 
       implicit val request: FakeRequest[Any] = FakeRequest()
       val partial = repository.getRequiredPartial()
 
       partial shouldBe Html("")
+
+      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl))(any(), any(), any())
     }
 
     "return container elements" in {
+      reset(mockedGet)
+      val repository = builder.injector().instanceOf[CacheRepository]
       val partialsJson = Json.obj(
         "tag1" -> "<partial1>",
         "tag2" -> "<partial2>"
@@ -80,6 +90,25 @@ class CacheRepositorySpec extends WordSpecLike {
       val partial = repository.getContainerPartial("tag1")
 
       partial shouldBe Html("<partial1>")
+
+      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl))(any(), any(), any())
     }
+
+    "return multiple container elements" in {
+      reset(mockedGet)
+      val repository = builder.injector().instanceOf[CacheRepository]
+      val partialsJson = Json.obj(
+        "tag1" -> "<partial1>",
+        "tag2" -> "<partial2>"
+      )
+      when(mockedGet.GET[JsValue](any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
+
+      implicit val request: FakeRequest[Any] = FakeRequest()
+      repository.getContainerPartial("tag1") shouldBe Html("<partial1>")
+      repository.getContainerPartial("tag2") shouldBe Html("<partial2>")
+
+      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl))(any(), any(), any())
+    }
+
   }
 }
