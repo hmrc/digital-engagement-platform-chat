@@ -17,11 +17,18 @@
 package uk.gov.hmrc.webchat.repositories
 
 import org.scalatest.Matchers._
+import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.scalatest.WordSpecLike
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.{JsValue, Json}
+import play.api.test.FakeRequest
+import play.twirl.api.Html
 import uk.gov.hmrc.webchat.utils.TestCoreGet
+
+import scala.concurrent.Future
 
 class CacheRepositorySpec extends WordSpecLike {
 
@@ -36,10 +43,43 @@ class CacheRepositorySpec extends WordSpecLike {
     bind[TestCoreGet].toInstance(mockedGet)
   )
 
+  private val repository = builder.injector().instanceOf[CacheRepository]
+
   "CacheRepository" should {
-    "be able to get as injected instance" in {
-      val repository = builder.injector().instanceOf[CacheRepository]
-      repository should not be null
+    "return required elements" in {
+      val partialsJson = Json.obj(
+        "REQUIRED" -> "<requiredpartial>"
+      )
+      when(mockedGet.GET[JsValue](any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
+
+      implicit val request: FakeRequest[Any] = FakeRequest()
+      val partial = repository.getRequiredPartial()
+
+      partial shouldBe Html("<requiredpartial>")
+    }
+
+    "return None when no required elements" in {
+      val partialsJson = Json.obj(
+      )
+      when(mockedGet.GET[JsValue](any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
+
+      implicit val request: FakeRequest[Any] = FakeRequest()
+      val partial = repository.getRequiredPartial()
+
+      partial shouldBe Html("")
+    }
+
+    "return container elements" in {
+      val partialsJson = Json.obj(
+        "tag1" -> "<partial1>",
+        "tag2" -> "<partial2>"
+      )
+      when(mockedGet.GET[JsValue](any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
+
+      implicit val request: FakeRequest[Any] = FakeRequest()
+      val partial = repository.getContainerPartial("tag1")
+
+      partial shouldBe Html("<partial1>")
     }
   }
 }

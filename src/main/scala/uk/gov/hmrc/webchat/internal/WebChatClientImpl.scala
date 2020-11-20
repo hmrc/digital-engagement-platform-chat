@@ -27,12 +27,12 @@ class WebChatClientImpl @Inject()(cacheRepository: CacheRepository,
                                   appConfig: WebChatConfig)
   extends WebChatClient {
   def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
-    val result = cacheRepository.getPartialContent(s"${appConfig.partialsBaseUrl}/webchat")
+    val result = cacheRepository.getRequiredPartial()
     if (result.body.isEmpty) None else Some(result)
   }
 
   def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html] = {
-    val result = cacheRepository.getPartialContent(s"${appConfig.partialsBaseUrl}/tag-element/$id")
+    val result = cacheRepository.getContainerPartial(id)
     if (result.body.isEmpty) None else Some(result)
   }
 }

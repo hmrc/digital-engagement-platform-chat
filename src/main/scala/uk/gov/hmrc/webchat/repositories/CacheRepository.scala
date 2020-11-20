@@ -23,6 +23,7 @@ import com.google.common.base.Ticker
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import javax.inject.{Inject, Singleton}
 import play.api.inject.Injector
+import play.api.libs.json.JsValue
 import play.api.mvc.RequestHeader
 import play.api.{Environment, Logger}
 import play.twirl.api.{Html, HtmlFormat}
@@ -30,6 +31,7 @@ import uk.gov.hmrc.http.{CoreGet, HeaderCarrier}
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.webchat.config.WebChatConfig
+import uk.gov.hmrc.webchat.utils.ParameterEncoder
 
 import scala.concurrent.duration.{Duration, _}
 import scala.concurrent.{Await, ExecutionContext}
@@ -59,12 +61,38 @@ class CacheRepository @Inject()(environment: Environment,
     loadPartial(key).successfulContentOrElse(errorMessage)
   }
 
+  def getRequiredPartial()(implicit request: RequestHeader): Html = {
+    getPartialByKey("REQUIRED")
+  }
+
+  def getContainerPartial(id: String)(implicit request: RequestHeader): Html = {
+    getPartialByKey(id)
+  }
+
+  private def getPartialByKey(partialKey: String)(implicit request: RequestHeader) = {
+    val hc = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, Some(request.session), Some(request))
+    val partials = cacheFetchPartials(CacheKey("", hc))
+    Html(partials.getOrElse(partialKey, ""))
+  }
+
   private def loadPartial(key: CacheKey): HtmlPartial = {
     try {
       cache.get(key)
     } catch {
       case _: Exception => HtmlPartial.Failure()
     }
+  }
+
+  private def cacheFetchPartials(key: CacheKey): Map[String, String] = {
+    val encodedIds = ParameterEncoder.encodeStringList(webChatConfig.containerIds)
+    val url = s"${webChatConfig.partialsBaseUrl}/partials/$encodedIds"
+
+    logger.info(s"Fetching partial from service for $key")
+
+    implicit val hc: HeaderCarrier = key.hc
+    val result = Await.result(httpGet.GET[JsValue](url), partialRetrievalTimeout)
+//      .recover(HtmlPartial.connectionExceptionsAsHtmlPartialFailure), partialRetrievalTimeout)
+    result.as[Map[String, String]]
   }
 
   private def cacheFetchPartial(key: CacheKey): HtmlPartial = {
