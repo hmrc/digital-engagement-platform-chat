@@ -29,7 +29,6 @@ import play.api.{Environment, Logger}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.{CoreGet, HeaderCarrier}
 import uk.gov.hmrc.play.HeaderCarrierConverter
-import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.webchat.config.WebChatConfig
 import uk.gov.hmrc.webchat.utils.ParameterEncoder
 
@@ -42,6 +41,7 @@ class CacheRepository @Inject()(environment: Environment,
                                 injector: Injector)
                                (implicit ec: ExecutionContext) {
 
+  private val requiredKey = "REQUIRED"
   private val logger: Logger = Logger(getClass)
   private val maximumEntries: Int = webChatConfig.maxCacheEntries
   private val refreshAfter: Duration = Duration(webChatConfig.refreshSeconds, SECONDS)
@@ -56,7 +56,7 @@ class CacheRepository @Inject()(environment: Environment,
   }
 
   def getRequiredPartial()(implicit request: RequestHeader): Html = {
-    getPartialByKey("REQUIRED")
+    getPartialByKey(requiredKey)
   }
 
   def getContainerPartial(id: String)(implicit request: RequestHeader): Html = {
