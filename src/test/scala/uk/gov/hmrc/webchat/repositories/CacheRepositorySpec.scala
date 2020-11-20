@@ -110,5 +110,18 @@ class CacheRepositorySpec extends WordSpecLike {
       verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl))(any(), any(), any())
     }
 
+    "handle exception in GET call" in {
+      reset(mockedGet)
+      val repository = builder.injector().instanceOf[CacheRepository]
+      when(mockedGet.GET[JsValue](any())(any(), any(), any())).thenThrow(new RuntimeException("Simulated exception"))
+
+      implicit val request: FakeRequest[Any] = FakeRequest()
+      val partial = repository.getContainerPartial("tag1")
+
+      partial shouldBe Html("")
+
+      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl))(any(), any(), any())
+    }
+
   }
 }

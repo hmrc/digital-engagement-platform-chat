@@ -81,7 +81,6 @@ class CacheRepository @Inject()(environment: Environment,
 
     implicit val hc: HeaderCarrier = key.hc
     val result = Await.result(httpGet.GET[JsValue](url), partialRetrievalTimeout)
-//      .recover(HtmlPartial.connectionExceptionsAsHtmlPartialFailure), partialRetrievalTimeout)
     result.as[Map[String, String]]
   }
 
