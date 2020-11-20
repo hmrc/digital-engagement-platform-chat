@@ -155,5 +155,49 @@ class WebChatConfigSpec extends WordSpecLike {
 
       webChatConfig.coreGetClass shouldBe "my.custom.coreGetClass"
     }
+
+    "default container ids" in {
+      val configFile =
+        """
+          |microservice {
+          |    services {
+          |      digital-engagement-platform-partials {
+          |        host = localhost
+          |        port = 9109
+          |        coreGetClass = "my.custom.coreGetClass"
+          |      }
+          |    }
+          |}
+          |""".stripMargin
+
+      val webChatConfig = configFromFile(configFile)
+
+      webChatConfig.containerIds shouldBe Seq("HMRC_Fixed_1", "HMRC_Anchored_1")
+    }
+
+    "read specified container ids" in {
+      val configFile =
+        """
+          |microservice {
+          |    services {
+          |      digital-engagement-platform-partials {
+          |        host = localhost
+          |        port = 9109
+          |        coreGetClass = "my.custom.coreGetClass"
+          |      }
+          |    }
+          |}
+          |dep-webchat {
+          |   container-ids = [
+          |     "id1",
+          |     "id2"
+          |   ]
+          |}
+          |""".stripMargin
+
+      val webChatConfig = configFromFile(configFile)
+
+      webChatConfig.containerIds shouldBe Seq("id1", "id2")
+    }
   }
 }

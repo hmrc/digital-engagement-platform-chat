@@ -25,7 +25,7 @@ class WebChatConfig @Inject()(configuration: Configuration) {
   private val defaultRetrievalTimeoutSeconds = 20
   private val defaultMaxCacheEntries = 1000
   private val defaultCoreGetClass = "uk.gov.hmrc.play.bootstrap.http.HttpClient"
-  private val defaultContainerIds = Seq("HMRC_Fixed_1, HMRC_Anchored_1")
+  private val defaultContainerIds = Seq("HMRC_Fixed_1", "HMRC_Anchored_1")
 
   private val path = "microservice.services.digital-engagement-platform-partials"
 
