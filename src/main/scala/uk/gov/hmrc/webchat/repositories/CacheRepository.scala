@@ -66,7 +66,7 @@ class CacheRepository @Inject()(environment: Environment,
   private def getPartialByKey(partialKey: String)(implicit request: RequestHeader): Html = {
     val hc = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, Some(request.session), Some(request))
     try {
-      val partials = cache.get(CacheKey("", hc))
+      val partials = cache.get(CacheKey(hc))
       Html(partials.getOrElse(partialKey, ""))
     } catch {
       case _: Exception => Html("")
