@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.webchat.repositories
+package uk.gov.hmrc.webchat.utils
 
-import uk.gov.hmrc.http.HeaderCarrier
+import java.net.{URLDecoder, URLEncoder}
 
-case class CacheKey(hc: HeaderCarrier) {
-  private val sessionId: String = hc.sessionId.fold("None")(_.value)
-  private val deviceId: String = hc.deviceID.getOrElse("None")
-  private val hashCodeValue = s"$sessionId".hashCode
+import play.api.libs.json.Json
 
-  override def hashCode(): Int = hashCodeValue
-
-  override def equals(obj: Any): Boolean = {
-    obj match {
-      case key: CacheKey => sessionId == key.sessionId
-      case _ => false
-    }
+object ParameterEncoder {
+  def encodeStringList(list: Seq[String]): String = {
+    URLEncoder.encode(Json.toJson(list).toString, "UTF-8")
   }
-
-  override def toString: String = s"CacheKey(sessionId: $sessionId, deviceId: $deviceId)"
+  def decodeStringList(encodedList: String): Seq[String] = {
+    val decoded = URLDecoder.decode(encodedList, "UTF-8")
+    Json.parse(decoded).as[Seq[String]]
+  }
 }

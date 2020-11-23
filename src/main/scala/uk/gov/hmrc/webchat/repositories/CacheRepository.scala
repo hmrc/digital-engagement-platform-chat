@@ -23,13 +23,14 @@ import com.google.common.base.Ticker
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import javax.inject.{Inject, Singleton}
 import play.api.inject.Injector
+import play.api.libs.json.JsValue
 import play.api.mvc.RequestHeader
 import play.api.{Environment, Logger}
-import play.twirl.api.{Html, HtmlFormat}
+import play.twirl.api.Html
 import uk.gov.hmrc.http.{CoreGet, HeaderCarrier}
 import uk.gov.hmrc.play.HeaderCarrierConverter
-import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.webchat.config.WebChatConfig
+import uk.gov.hmrc.webchat.utils.ParameterEncoder
 
 import scala.concurrent.duration.{Duration, _}
 import scala.concurrent.{Await, ExecutionContext}
@@ -40,6 +41,7 @@ class CacheRepository @Inject()(environment: Environment,
                                 injector: Injector)
                                (implicit ec: ExecutionContext) {
 
+  private val requiredKey = "REQUIRED"
   private val logger: Logger = Logger(getClass)
   private val maximumEntries: Int = webChatConfig.maxCacheEntries
   private val refreshAfter: Duration = Duration(webChatConfig.refreshSeconds, SECONDS)
@@ -53,38 +55,44 @@ class CacheRepository @Inject()(environment: Environment,
     injector.instanceOf[CoreGet](bindingClass)
   }
 
-  def getPartialContent(url: String, errorMessage: Html = HtmlFormat.empty)(implicit request: RequestHeader): Html = {
-    val hc = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, Some(request.session), Some(request))
-    val key = CacheKey(url, hc)
-    loadPartial(key).successfulContentOrElse(errorMessage)
+  def getRequiredPartial()(implicit request: RequestHeader): Html = {
+    getPartialByKey(requiredKey)
   }
 
-  private def loadPartial(key: CacheKey): HtmlPartial = {
+  def getContainerPartial(id: String)(implicit request: RequestHeader): Html = {
+    getPartialByKey(id)
+  }
+
+  private def getPartialByKey(partialKey: String)(implicit request: RequestHeader): Html = {
+    val hc = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, Some(request.session), Some(request))
     try {
-      cache.get(key)
+      val partials = cache.get(CacheKey(hc))
+      Html(partials.getOrElse(partialKey, ""))
     } catch {
-      case _: Exception => HtmlPartial.Failure()
+      case _: Exception => Html("")
     }
   }
 
-  private def cacheFetchPartial(key: CacheKey): HtmlPartial = {
+  private def cacheFetchPartials(key: CacheKey): Map[String, String] = {
+    val encodedIds = ParameterEncoder.encodeStringList(webChatConfig.containerIds)
+    val url = s"${webChatConfig.partialsBaseUrl}/partials/$encodedIds"
+
     logger.info(s"Fetching partial from service for $key")
+
     implicit val hc: HeaderCarrier = key.hc
-    Await.result(httpGet.GET[HtmlPartial](key.url).recover(HtmlPartial.connectionExceptionsAsHtmlPartialFailure), partialRetrievalTimeout)
+    val result = Await.result(httpGet.GET[JsValue](url), partialRetrievalTimeout)
+    result.as[Map[String, String]]
   }
 
-  private lazy val cache: LoadingCache[CacheKey, HtmlPartial.Success] =
+  private lazy val cache: LoadingCache[CacheKey, Map[String, String]] =
     CacheBuilder.newBuilder()
       .maximumSize(maximumEntries)
       .ticker(cacheTicker)
       .refreshAfterWrite(refreshAfter.toMillis, TimeUnit.MILLISECONDS)
       .expireAfterWrite(expireAfter.toMillis, TimeUnit.MILLISECONDS)
-      .build(new CacheLoader[CacheKey, HtmlPartial.Success]() {
-        def load(key: CacheKey): HtmlPartial.Success =
-          cacheFetchPartial(key) match {
-          case s: HtmlPartial.Success => s
-          case f: HtmlPartial.Failure    => throw new RuntimeException(s"Could not load partial: $f")
-        }
+      .build(new CacheLoader[CacheKey, Map[String, String]]() {
+        def load(key: CacheKey): Map[String, String] =
+          cacheFetchPartials(key)
       })
 
   private val cacheTicker =  Ticker.systemTicker()

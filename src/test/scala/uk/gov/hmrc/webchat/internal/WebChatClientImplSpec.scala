@@ -58,14 +58,13 @@ class WebChatClientImplSpec extends WordSpecLike {
         "return all elements as HTML" in {
           val cacheRepository = mock[CacheRepository]
           when {
-            cacheRepository.getPartialContent(any(), any())(any())
+            cacheRepository.getRequiredPartial()(any())
           } thenReturn(Html("<div>Test</div>"))
 
           val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
 
           webChatClient.loadRequiredElements() shouldBe Some(Html("<div>Test</div>"))
-          verify(cacheRepository).getPartialContent(
-            meq("http://localhost:1111/engagement-platform-partials/webchat"), any())(any())
+          verify(cacheRepository).getRequiredPartial()(any())
         }
       }
 
@@ -73,15 +72,14 @@ class WebChatClientImplSpec extends WordSpecLike {
         "return a None that will indicate the user that there is something wrong" in {
           val cacheRepository = mock[CacheRepository]
           when {
-            cacheRepository.getPartialContent(any(), any())(any())
+            cacheRepository.getRequiredPartial()(any())
           } thenReturn(Html(""))
 
           val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
 
           webChatClient.loadRequiredElements() shouldBe None
 
-          verify(cacheRepository).getPartialContent(
-            meq("http://localhost:1111/engagement-platform-partials/webchat"), any())(any())
+          verify(cacheRepository).getRequiredPartial()(any())
         }
       }
     }
@@ -90,7 +88,7 @@ class WebChatClientImplSpec extends WordSpecLike {
       "return the html element when we specify an id" in {
         val cacheRepository = mock[CacheRepository]
         when {
-          cacheRepository.getPartialContent(any(), any())(any())
+          cacheRepository.getContainerPartial(any())(any())
         } thenReturn {
           Html("""<div id="test"></div>""")
         }
@@ -99,24 +97,7 @@ class WebChatClientImplSpec extends WordSpecLike {
 
         webChatClient.loadWebChatContainer("test") shouldBe Some(Html("""<div id="test"></div>"""))
 
-        verify(cacheRepository).getPartialContent(
-          meq("http://localhost:1111/engagement-platform-partials/tag-element/test"), any())(any())
-      }
-
-      "return the html element if no id is specified (default)" in {
-        val cacheRepository = mock[CacheRepository]
-        when {
-          cacheRepository.getPartialContent(any(), any())(any())
-        } thenReturn {
-          Html("""<div id="HMRC_Fixed_1"></div>""")
-        }
-
-        val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
-
-        webChatClient.loadWebChatContainer() shouldBe Some(Html("""<div id="HMRC_Fixed_1"></div>"""))
-
-        verify(cacheRepository).getPartialContent(
-          meq("http://localhost:1111/engagement-platform-partials/tag-element/HMRC_Fixed_1"), any())(any())
+        verify(cacheRepository).getContainerPartial(meq("test"))(any())
       }
     }
   }
