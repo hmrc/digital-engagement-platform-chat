@@ -24,16 +24,22 @@ import uk.gov.hmrc.webchat.config.WebChatConfig
 import uk.gov.hmrc.webchat.repositories.CacheRepository
 
 class WebChatClientImpl @Inject()(cacheRepository: CacheRepository,
-                                  appConfig: WebChatConfig)
+                                  webChatConfig: WebChatConfig)
   extends WebChatClient {
   def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
-    val result = cacheRepository.getRequiredPartial()
-    if (result.body.isEmpty) None else Some(result)
+    getPartial (() => cacheRepository.getRequiredPartial())
   }
 
   def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html] = {
-    val result = cacheRepository.getContainerPartial(id)
-    if (result.body.isEmpty) None else Some(result)
+    getPartial (() => cacheRepository.getContainerPartial(id))
+  }
+
+  private def getPartial(get: () => Html): Option[Html] = {
+    if (webChatConfig.enabled) {
+      val result = get()
+      if (result.body.isEmpty) None else Some(result)
+    } else {
+      None
+    }
   }
 }
-
