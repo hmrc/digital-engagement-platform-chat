@@ -36,4 +36,5 @@ class WebChatConfig @Inject()(configuration: Configuration) {
   lazy val maxCacheEntries : Int = configuration.getOptional[Int](s"$path.cache.maxEntries").getOrElse(defaultMaxCacheEntries)
   lazy val coreGetClass: String = configuration.getOptional[String](s"$path.coreGetClass").getOrElse(defaultCoreGetClass)
   lazy val containerIds: Seq[String] = configuration.getOptional[Seq[String]]("dep-webchat.container-ids").getOrElse(defaultContainerIds)
+  lazy val enabled: Boolean = configuration.getOptional[Boolean]("dep-webchat.enabled").getOrElse(true)
 }

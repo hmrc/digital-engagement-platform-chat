@@ -199,5 +199,44 @@ class WebChatConfigSpec extends WordSpecLike {
 
       webChatConfig.containerIds shouldBe Seq("id1", "id2")
     }
+
+    "default enabled to true" in {
+      val configFile =
+        """
+          |microservice {
+          |    services {
+          |      digital-engagement-platform-partials {
+          |        host = localhost
+          |        port = 9109
+          |      }
+          |    }
+          |}
+          |""".stripMargin
+
+      val webChatConfig = configFromFile(configFile)
+
+      webChatConfig.enabled shouldBe true
+    }
+
+    "reads enabled state" in {
+      val configFile =
+        """
+          |microservice {
+          |    services {
+          |      digital-engagement-platform-partials {
+          |        host = localhost
+          |        port = 9109
+          |      }
+          |    }
+          |}
+          |dep-webchat {
+          |   enabled = false
+          |}
+          |""".stripMargin
+
+      val webChatConfig = configFromFile(configFile)
+
+      webChatConfig.enabled shouldBe false
+    }
   }
 }
