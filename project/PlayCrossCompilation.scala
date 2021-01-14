@@ -19,14 +19,30 @@ import uk.gov.hmrc.playcrosscompilation.PlayVersion._
 
 object PlayCrossCompilation extends AbstractPlayCrossCompilation(defaultPlayVersion = Play27) {
   def version: String = playVersion match {
-    case Play26 =>
-      println("in play 2.6")
-      "2.6.25"
-    case Play27 =>
-      println("in play 2.7")
-      "2.7.5"
+    case Play26 => "2.6.25"
+    case Play27 => "2.7.5"
     case _ => throw new RuntimeException(
-      s"PlayCrossCompilation: Unsupported play version: $playVersion. You need to add a case for this version in order to build."
+      s"PlayCrossCompilation.version: Unsupported play version: $playVersion. You need to add a case for this version in order to build."
     )
+  }
+
+  def scalaVersion: String = {
+    playVersion match {
+      case Play26 => "2.11.12"
+      case Play27 => "2.12.9"
+      case _ => throw new RuntimeException(
+        s"PlayCrossCompilation.scalaVersion: Unsupported play version: $playVersion. You need to add a case for this version in order to build."
+      )
+    }
+  }
+
+  def crossScalaVersions: Seq[String] = {
+    playVersion match {
+      case Play26 => Seq("2.11.12", "2.12.9")
+      case Play27 => Seq("2.12.9")
+      case _ => throw new RuntimeException(
+        s"PlayCrossCompilation.crossScalaVersions: Unsupported play version: $playVersion. You need to add a case for this version in order to build."
+      )
+    }
   }
 }
