@@ -14,8 +14,9 @@ lazy val library = Project(appName, file("."))
         shared = sharedLibs,
         play26 = compilePlay26,
         play27 = compilePlay27
-    )
-  )
+    ),
+    resolvers += Resolver.jcenterRepo
+)
   .settings(PlayCrossCompilation.playCrossCompilationSettings)
 
 val sharedLibs = Seq(
@@ -23,7 +24,7 @@ val sharedLibs = Seq(
 
 val compilePlay26 = Seq(
   "uk.gov.hmrc" %% "play-partials" % "6.11.0-play-26",
-  "uk.gov.hmrc" %% "bootstrap-play-26" % "1.16.0"
+  "uk.gov.hmrc" %% "bootstrap-play-26" % "2.3.0"
 )
 
 val compilePlay27 = Seq(
