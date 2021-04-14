@@ -53,28 +53,28 @@ class CacheRepositorySpec extends WordSpecLike {
       val partialsJson = Json.obj(
         "REQUIRED" -> "<requiredpartial>"
       )
-      when(mockedGet.GET[JsValue](any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
+      when(mockedGet.GET[JsValue](any[String], any(), any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
 
       implicit val request: FakeRequest[Any] = FakeRequest()
       val partial = repository.getRequiredPartial()
 
       partial shouldBe Html("<requiredpartial>")
 
-      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl))(any(), any(), any())
+      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl), any(), any())(any(), any(), any())
     }
 
     "return None when no required elements" in {
       reset(mockedGet)
       val repository = builder.injector().instanceOf[CacheRepository]
       val partialsJson = Json.obj()
-      when(mockedGet.GET[JsValue](any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
+      when(mockedGet.GET[JsValue](any[String], any(), any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
 
       implicit val request: FakeRequest[Any] = FakeRequest()
       val partial = repository.getRequiredPartial()
 
       partial shouldBe Html("")
 
-      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl))(any(), any(), any())
+      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl), any(), any())(any(), any(), any())
     }
 
     "return container elements" in {
@@ -84,14 +84,14 @@ class CacheRepositorySpec extends WordSpecLike {
         "tag1" -> "<partial1>",
         "tag2" -> "<partial2>"
       )
-      when(mockedGet.GET[JsValue](any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
+      when(mockedGet.GET[JsValue](any[String], any(), any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
 
       implicit val request: FakeRequest[Any] = FakeRequest()
       val partial = repository.getContainerPartial("tag1")
 
       partial shouldBe Html("<partial1>")
 
-      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl))(any(), any(), any())
+      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl), any(), any())(any(), any(), any())
     }
 
     "return multiple container elements" in {
@@ -101,26 +101,26 @@ class CacheRepositorySpec extends WordSpecLike {
         "tag1" -> "<partial1>",
         "tag2" -> "<partial2>"
       )
-      when(mockedGet.GET[JsValue](any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
+      when(mockedGet.GET[JsValue](any[String], any(), any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
 
       implicit val request: FakeRequest[Any] = FakeRequest()
       repository.getContainerPartial("tag1") shouldBe Html("<partial1>")
       repository.getContainerPartial("tag2") shouldBe Html("<partial2>")
 
-      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl))(any(), any(), any())
+      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl), any(), any())(any(), any(), any())
     }
 
     "handle exception in GET call" in {
       reset(mockedGet)
       val repository = builder.injector().instanceOf[CacheRepository]
-      when(mockedGet.GET[JsValue](any())(any(), any(), any())).thenThrow(new RuntimeException("Simulated exception"))
+      when(mockedGet.GET[JsValue](any[String], any(), any())(any(), any(), any())).thenThrow(new RuntimeException("Simulated exception"))
 
       implicit val request: FakeRequest[Any] = FakeRequest()
       val partial = repository.getContainerPartial("tag1")
 
       partial shouldBe Html("")
 
-      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl))(any(), any(), any())
+      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl), any(), any())(any(), any(), any())
     }
 
   }

@@ -28,9 +28,10 @@ import play.api.mvc.RequestHeader
 import play.api.{Environment, Logger}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.{CoreGet, HeaderCarrier}
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.webchat.config.WebChatConfig
 import uk.gov.hmrc.webchat.utils.ParameterEncoder
+import uk.gov.hmrc.http.HttpReads.Implicits
 
 import scala.concurrent.duration.{Duration, _}
 import scala.concurrent.{Await, ExecutionContext}
@@ -64,7 +65,7 @@ class CacheRepository @Inject()(environment: Environment,
   }
 
   private def getPartialByKey(partialKey: String)(implicit request: RequestHeader): Html = {
-    val hc = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, Some(request.session), Some(request))
+    val hc = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     try {
       val partials = cache.get(CacheKey(hc))
       Html(partials.getOrElse(partialKey, ""))
@@ -80,7 +81,7 @@ class CacheRepository @Inject()(environment: Environment,
     logger.info(s"Fetching partial from service for $key")
 
     implicit val hc: HeaderCarrier = key.hc
-    val result = Await.result(httpGet.GET[JsValue](url), partialRetrievalTimeout)
+    val result = Await.result(httpGet.GET[JsValue](url)(Implicits.readJsValue, hc, ec), partialRetrievalTimeout)
     result.as[Map[String, String]]
   }
 

@@ -29,5 +29,5 @@ val compilePlay26 = Seq(
 
 val compilePlay27 = Seq(
   "uk.gov.hmrc" %% "play-partials" % "6.11.0-play-27",
-  "uk.gov.hmrc" %% "bootstrap-common-play-27" % "3.3.0"
+  "uk.gov.hmrc" %% "bootstrap-common-play-27" % "4.1.0"
 )
