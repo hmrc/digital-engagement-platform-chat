@@ -12,7 +12,6 @@ lazy val library = Project(appName, file("."))
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     libraryDependencies ++= PlayCrossCompilation.dependencies(
         shared = sharedLibs,
-        play26 = compilePlay26,
         play27 = compilePlay27
     ),
     resolvers += Resolver.jcenterRepo
@@ -22,12 +21,7 @@ lazy val library = Project(appName, file("."))
 val sharedLibs = Seq(
 )
 
-val compilePlay26 = Seq(
-  "uk.gov.hmrc" %% "play-partials" % "6.11.0-play-26",
-  "uk.gov.hmrc" %% "bootstrap-play-26" % "2.2.0"    // play-26 for 2.11 only goes up to 2.2.0
-)
-
 val compilePlay27 = Seq(
   "uk.gov.hmrc" %% "play-partials" % "6.11.0-play-27",
-  "uk.gov.hmrc" %% "bootstrap-common-play-27" % "3.3.0"
+  "uk.gov.hmrc" %% "bootstrap-common-play-27" % "4.1.0"
 )

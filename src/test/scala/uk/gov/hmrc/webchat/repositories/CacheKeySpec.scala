@@ -20,7 +20,7 @@ import org.scalatest.WordSpecLike
 import org.scalatest.Matchers._
 
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.http.SessionId
 
 class CacheKeySpec extends WordSpecLike {
   "CacheKey" should {
