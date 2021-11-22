@@ -77,6 +77,36 @@ class CacheRepositorySpec extends WordSpecLike {
       verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl), any(), any())(any(), any(), any())
     }
 
+    "return HMRC chat skin element" in {
+      reset(mockedGet)
+      val repository = builder.injector().instanceOf[CacheRepository]
+      val partialsJson = Json.obj(
+        "HMRCCHATSKIN" -> "<hmrcchatskinpartial>"
+      )
+      when(mockedGet.GET[JsValue](any[String], any(), any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
+
+      implicit val request: FakeRequest[Any] = FakeRequest()
+      val partial = repository.getHMRCChatSkinPartial()
+
+      partial shouldBe Html("<hmrcchatskinpartial>")
+
+      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl), any(), any())(any(), any(), any())
+    }
+
+    "return None when no hmrc chat skin element" in {
+      reset(mockedGet)
+      val repository = builder.injector().instanceOf[CacheRepository]
+      val partialsJson = Json.obj()
+      when(mockedGet.GET[JsValue](any[String], any(), any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
+
+      implicit val request: FakeRequest[Any] = FakeRequest()
+      val partial = repository.getHMRCChatSkinPartial()
+
+      partial shouldBe Html("")
+
+      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl), any(), any())(any(), any(), any())
+    }
+
     "return container elements" in {
       reset(mockedGet)
       val repository = builder.injector().instanceOf[CacheRepository]

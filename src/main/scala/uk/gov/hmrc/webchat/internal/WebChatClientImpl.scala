@@ -30,6 +30,10 @@ class WebChatClientImpl @Inject()(cacheRepository: CacheRepository,
     getPartial (() => cacheRepository.getRequiredPartial())
   }
 
+  def loadHMRCChatSkinElement()(implicit request: Request[_]): Option[Html] = {
+    getPartial (() => cacheRepository.getHMRCChatSkinPartial())
+  }
+
   def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html] = {
     getPartial (() => cacheRepository.getContainerPartial(id))
   }

@@ -24,5 +24,6 @@ import uk.gov.hmrc.webchat.internal.WebChatClientImpl
 @ImplementedBy(classOf[WebChatClientImpl])
 trait WebChatClient {
   def loadRequiredElements()(implicit request: Request[_]): Option[Html]
+  def loadHMRCChatSkinElement()(implicit request: Request[_]): Option[Html]
   def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html]
 }
