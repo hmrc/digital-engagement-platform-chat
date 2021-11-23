@@ -43,6 +43,7 @@ class CacheRepository @Inject()(environment: Environment,
                                (implicit ec: ExecutionContext) {
 
   private val requiredKey = "REQUIRED"
+  private val hmrcChatSkinKey = "HMRCCHATSKIN"
   private val logger: Logger = Logger(getClass)
   private val maximumEntries: Int = webChatConfig.maxCacheEntries
   private val refreshAfter: Duration = Duration(webChatConfig.refreshSeconds, SECONDS)
@@ -58,6 +59,10 @@ class CacheRepository @Inject()(environment: Environment,
 
   def getRequiredPartial()(implicit request: RequestHeader): Html = {
     getPartialByKey(requiredKey)
+  }
+
+  def getHMRCChatSkinPartial()(implicit request: RequestHeader): Html = {
+    getPartialByKey(hmrcChatSkinKey)
   }
 
   def getContainerPartial(id: String)(implicit request: RequestHeader): Html = {

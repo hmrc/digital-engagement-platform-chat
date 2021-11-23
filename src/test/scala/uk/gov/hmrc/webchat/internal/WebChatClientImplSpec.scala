@@ -59,7 +59,7 @@ class WebChatClientImplSpec extends WordSpecLike {
           val cacheRepository = mock[CacheRepository]
           when {
             cacheRepository.getRequiredPartial()(any())
-          } thenReturn (Html("<div>Test</div>"))
+          } thenReturn Html("<div>Test</div>")
 
           val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
 
@@ -73,13 +73,43 @@ class WebChatClientImplSpec extends WordSpecLike {
           val cacheRepository = mock[CacheRepository]
           when {
             cacheRepository.getRequiredPartial()(any())
-          } thenReturn (Html(""))
+          } thenReturn Html("")
 
           val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
 
           webChatClient.loadRequiredElements() shouldBe None
 
           verify(cacheRepository).getRequiredPartial()(any())
+        }
+      }
+    }
+
+    "requesting HMRC chat skin element" should {
+      "the request is successful" should {
+        "return all elements as HTML" in {
+          val cacheRepository = mock[CacheRepository]
+          when {
+            cacheRepository.getHMRCChatSkinPartial()(any())
+          } thenReturn Html("<div>Test</div>")
+
+          val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
+
+          webChatClient.loadHMRCChatSkinElement() shouldBe Some(Html("<div>Test</div>"))
+          verify(cacheRepository).getHMRCChatSkinPartial()(any())
+        }
+      }
+      "there is no data returned" should {
+        "return a None that will indicate the user that there is something wrong" in {
+          val cacheRepository = mock[CacheRepository]
+          when {
+            cacheRepository.getHMRCChatSkinPartial()(any())
+          } thenReturn Html("")
+
+          val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
+
+          webChatClient.loadHMRCChatSkinElement() shouldBe None
+
+          verify(cacheRepository).getHMRCChatSkinPartial()(any())
         }
       }
     }
@@ -101,6 +131,7 @@ class WebChatClientImplSpec extends WordSpecLike {
       }
     }
   }
+
   "disabled WebChat client" when {
     val builder = new GuiceApplicationBuilder().configure(
       "microservice.services.digital-engagement-platform-partials.coreGetClass" -> "uk.gov.hmrc.webchat.utils.TestCoreGet",
@@ -117,10 +148,22 @@ class WebChatClientImplSpec extends WordSpecLike {
         val cacheRepository = mock[CacheRepository]
         when {
           cacheRepository.getRequiredPartial()(any())
-        } thenReturn (Html("<div>Test</div>"))
+        } thenReturn Html("<div>Test</div>")
 
         val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
         webChatClient.loadRequiredElements() shouldBe None
+      }
+    }
+
+    "requesting hmrc chat skin element" should {
+      "return empty" in {
+        val cacheRepository = mock[CacheRepository]
+        when {
+          cacheRepository.getHMRCChatSkinPartial()(any())
+        } thenReturn Html("<div>Test</div>")
+
+        val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
+        webChatClient.loadHMRCChatSkinElement() shouldBe None
       }
     }
 
@@ -129,7 +172,7 @@ class WebChatClientImplSpec extends WordSpecLike {
         val cacheRepository = mock[CacheRepository]
         when {
           cacheRepository.getContainerPartial(meq("ID"))(any())
-        } thenReturn (Html("<div>Test</div>"))
+        } thenReturn Html("<div>Test</div>")
 
         val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
         webChatClient.loadWebChatContainer("ID") shouldBe None

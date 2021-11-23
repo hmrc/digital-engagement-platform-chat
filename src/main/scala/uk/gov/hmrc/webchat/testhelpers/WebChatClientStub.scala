@@ -24,6 +24,9 @@ class WebChatClientStub extends WebChatClient {
   override def loadRequiredElements()(implicit request: Request[_]): Option[Html] =
     Some(Html("""<div id="WEBCHAT_TEST_RequiredElements"></div>"""))
 
+  override def loadHMRCChatSkinElement()(implicit request: Request[_]): Option[Html] =
+    Some(Html("""<div id="WEBCHAT_TEST_HMRCChatSkinElement"></div>"""))
+
   override def loadWebChatContainer(id: String)(implicit request: Request[_]): Option[Html] =
     Some(Html(s"""<div id="$id"></div>"""))
 }
