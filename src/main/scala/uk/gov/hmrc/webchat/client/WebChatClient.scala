@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,6 @@ import uk.gov.hmrc.webchat.internal.WebChatClientImpl
 @ImplementedBy(classOf[WebChatClientImpl])
 trait WebChatClient {
   def loadRequiredElements()(implicit request: Request[_]): Option[Html]
-  def loadHMRCChatSkinElement()(implicit request: Request[_]): Option[Html]
+  def loadHMRCChatSkinElement(partialType: String)(implicit request: Request[_]): Option[Html]
   def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html]
 }
