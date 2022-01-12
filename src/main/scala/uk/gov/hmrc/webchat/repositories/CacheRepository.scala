@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,9 @@ class CacheRepository @Inject()(environment: Environment,
                                (implicit ec: ExecutionContext) {
 
   private val requiredKey = "REQUIRED"
-  private val hmrcChatSkinKey = "HMRCCHATSKIN"
+  private val hmrcEmbeddedChatSkinKey = "HMRCEMBEDDEDCHATSKIN"
+  private val hmrcPopupChatSkinKey = "HMRCPOPUPCHATSKIN"
+  private val hmrcInvalidChatSkinKey = "HMRCINVALIDCHATSKIN"
   private val logger: Logger = Logger(getClass)
   private val maximumEntries: Int = webChatConfig.maxCacheEntries
   private val refreshAfter: Duration = Duration(webChatConfig.refreshSeconds, SECONDS)
@@ -61,8 +63,13 @@ class CacheRepository @Inject()(environment: Environment,
     getPartialByKey(requiredKey)
   }
 
-  def getHMRCChatSkinPartial()(implicit request: RequestHeader): Html = {
-    getPartialByKey(hmrcChatSkinKey)
+  def getHMRCChatSkinPartial(partialType: String)(implicit request: RequestHeader): Html = {
+    partialType match {
+      case "popup" => getPartialByKey(hmrcPopupChatSkinKey)
+      case "embedded" => getPartialByKey(hmrcEmbeddedChatSkinKey)
+      case _ => getPartialByKey(hmrcInvalidChatSkinKey)
+    }
+
   }
 
   def getContainerPartial(id: String)(implicit request: RequestHeader): Html = {

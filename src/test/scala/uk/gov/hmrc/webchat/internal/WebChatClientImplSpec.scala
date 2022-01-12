@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,27 +89,27 @@ class WebChatClientImplSpec extends WordSpecLike {
         "return all elements as HTML" in {
           val cacheRepository = mock[CacheRepository]
           when {
-            cacheRepository.getHMRCChatSkinPartial()(any())
+            cacheRepository.getHMRCChatSkinPartial(any())(any())
           } thenReturn Html("<div>Test</div>")
 
           val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
 
-          webChatClient.loadHMRCChatSkinElement() shouldBe Some(Html("<div>Test</div>"))
-          verify(cacheRepository).getHMRCChatSkinPartial()(any())
+          webChatClient.loadHMRCChatSkinElement("popup") shouldBe Some(Html("<div>Test</div>"))
+          verify(cacheRepository).getHMRCChatSkinPartial(meq("popup"))(any())
         }
       }
       "there is no data returned" should {
         "return a None that will indicate the user that there is something wrong" in {
           val cacheRepository = mock[CacheRepository]
           when {
-            cacheRepository.getHMRCChatSkinPartial()(any())
+            cacheRepository.getHMRCChatSkinPartial(any())(any())
           } thenReturn Html("")
 
           val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
 
-          webChatClient.loadHMRCChatSkinElement() shouldBe None
+          webChatClient.loadHMRCChatSkinElement("test") shouldBe None
 
-          verify(cacheRepository).getHMRCChatSkinPartial()(any())
+          verify(cacheRepository).getHMRCChatSkinPartial(meq("test"))(any())
         }
       }
     }
@@ -159,11 +159,11 @@ class WebChatClientImplSpec extends WordSpecLike {
       "return empty" in {
         val cacheRepository = mock[CacheRepository]
         when {
-          cacheRepository.getHMRCChatSkinPartial()(any())
+          cacheRepository.getHMRCChatSkinPartial(any())(any())
         } thenReturn Html("<div>Test</div>")
 
         val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
-        webChatClient.loadHMRCChatSkinElement() shouldBe None
+        webChatClient.loadHMRCChatSkinElement("test") shouldBe None
       }
     }
 

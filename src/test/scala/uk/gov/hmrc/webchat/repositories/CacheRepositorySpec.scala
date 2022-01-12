@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,18 +77,34 @@ class CacheRepositorySpec extends WordSpecLike {
       verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl), any(), any())(any(), any(), any())
     }
 
-    "return HMRC chat skin element" in {
+    "return HMRC chat skin elements for popup" in {
       reset(mockedGet)
       val repository = builder.injector().instanceOf[CacheRepository]
       val partialsJson = Json.obj(
-        "HMRCCHATSKIN" -> "<hmrcchatskinpartial>"
+        "HMRCPOPUPCHATSKIN" -> "<hmrcpopupchatskinpartial>"
       )
       when(mockedGet.GET[JsValue](any[String], any(), any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
 
       implicit val request: FakeRequest[Any] = FakeRequest()
-      val partial = repository.getHMRCChatSkinPartial()
+      val partial = repository.getHMRCChatSkinPartial("popup")
 
-      partial shouldBe Html("<hmrcchatskinpartial>")
+      partial shouldBe Html("<hmrcpopupchatskinpartial>")
+
+      verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl), any(), any())(any(), any(), any())
+    }
+
+    "return HMRC chat skin elements for pup" in {
+      reset(mockedGet)
+      val repository = builder.injector().instanceOf[CacheRepository]
+      val partialsJson = Json.obj(
+        "HMRCEMBEDDEDCHATSKIN" -> "<hmrcembeddedchatskinpartial>"
+      )
+      when(mockedGet.GET[JsValue](any[String], any(), any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
+
+      implicit val request: FakeRequest[Any] = FakeRequest()
+      val partial = repository.getHMRCChatSkinPartial("embedded")
+
+      partial shouldBe Html("<hmrcembeddedchatskinpartial>")
 
       verify(mockedGet, times(1)).GET[JsValue](meq(expectedUrl), any(), any())(any(), any(), any())
     }
@@ -100,7 +116,7 @@ class CacheRepositorySpec extends WordSpecLike {
       when(mockedGet.GET[JsValue](any[String], any(), any())(any(), any(), any())).thenReturn(Future.successful(partialsJson))
 
       implicit val request: FakeRequest[Any] = FakeRequest()
-      val partial = repository.getHMRCChatSkinPartial()
+      val partial = repository.getHMRCChatSkinPartial("test")
 
       partial shouldBe Html("")
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ class WebChatClientStub extends WebChatClient {
   override def loadRequiredElements()(implicit request: Request[_]): Option[Html] =
     Some(Html("""<div id="WEBCHAT_TEST_RequiredElements"></div>"""))
 
-  override def loadHMRCChatSkinElement()(implicit request: Request[_]): Option[Html] =
+  override def loadHMRCChatSkinElement(id: String)(implicit request: Request[_]): Option[Html] =
     Some(Html("""<div id="WEBCHAT_TEST_HMRCChatSkinElement"></div>"""))
 
   override def loadWebChatContainer(id: String)(implicit request: Request[_]): Option[Html] =
