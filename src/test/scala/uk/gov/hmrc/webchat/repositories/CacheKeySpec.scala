@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.webchat.repositories
 
-import org.scalatest.WordSpecLike
-import org.scalatest.Matchers._
 
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.SessionId
 
-class CacheKeySpec extends WordSpecLike {
+class CacheKeySpec extends AnyWordSpecLike with Matchers{
   "CacheKey" should {
     "print out relevant information" when {
       "all parameters are defined" in {

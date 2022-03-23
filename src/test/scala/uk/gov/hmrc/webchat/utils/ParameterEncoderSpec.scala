@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.webchat.utils
 
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatest.matchers.should.Matchers
 
-class ParameterEncoderSpec extends WordSpecLike with Matchers {
+class ParameterEncoderSpec extends AnyWordSpecLike with Matchers {
   "ParameterEncoder" when {
     "encoding parameters" should {
       "work with an empty list" in {

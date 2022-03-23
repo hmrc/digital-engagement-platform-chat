@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.webchat.repositories
 
-import org.scalatest.Matchers._
 import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.scalatest.WordSpecLike
-import org.scalatestplus.mockito.MockitoSugar.mock
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
@@ -30,9 +29,9 @@ import uk.gov.hmrc.webchat.utils.TestCoreGet
 
 import scala.concurrent.Future
 
-class CacheRepositorySpec extends WordSpecLike {
+class CacheRepositorySpec extends AnyWordSpecLike with Matchers {
 
-  private val mockedGet = mock[TestCoreGet]
+  private val mockedGet = mock(classOf[TestCoreGet])
 
   private val builder = new GuiceApplicationBuilder().configure(
     "microservice.services.digital-engagement-platform-partials.coreGetClass" -> "uk.gov.hmrc.webchat.utils.TestCoreGet",
