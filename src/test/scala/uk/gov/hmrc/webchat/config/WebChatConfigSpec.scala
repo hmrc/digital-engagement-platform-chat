@@ -17,11 +17,11 @@
 package uk.gov.hmrc.webchat.config
 
 import com.typesafe.config.{Config, ConfigFactory}
-import org.scalatest.WordSpecLike
-import org.scalatest.Matchers._
+import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatest.matchers.should.Matchers
 import play.api.Configuration
 
-class WebChatConfigSpec extends WordSpecLike {
+class WebChatConfigSpec extends AnyWordSpecLike with Matchers{
 
   private def configFromFile(contents: String) = {
     val config: Config = ConfigFactory.parseString(contents)

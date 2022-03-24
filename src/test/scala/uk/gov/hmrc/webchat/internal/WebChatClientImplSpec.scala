@@ -18,9 +18,8 @@ package uk.gov.hmrc.webchat.internal
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito._
-import org.scalatest.Matchers._
-import org.scalatest.WordSpecLike
-import org.scalatestplus.mockito.MockitoSugar.mock
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.Request
@@ -31,7 +30,7 @@ import uk.gov.hmrc.webchat.config.WebChatConfig
 import uk.gov.hmrc.webchat.repositories.CacheRepository
 import uk.gov.hmrc.webchat.utils.TestCoreGet
 
-class WebChatClientImplSpec extends WordSpecLike {
+class WebChatClientImplSpec extends AnyWordSpecLike with Matchers {
   implicit val fakeRequest: Request[_] = FakeRequest("GET", "/test")
 
   "Webchat client" when {
@@ -41,7 +40,7 @@ class WebChatClientImplSpec extends WordSpecLike {
       "microservice.services.digital-engagement-platform-partials.port" -> 1111,
       "microservice.services.digital-engagement-platform-partials.protocol" -> "http"
     ).overrides(
-      bind[TestCoreGet].toInstance(mock[TestCoreGet]) // for case where we test injected instance
+      bind[TestCoreGet].toInstance(mock(classOf[TestCoreGet])) // for case where we test injected instance
     )
 
     val configuration = new WebChatConfig(builder.configuration)
@@ -56,7 +55,7 @@ class WebChatClientImplSpec extends WordSpecLike {
     "requesting required elements" when {
       "the request is successful" should {
         "return all elements as HTML" in {
-          val cacheRepository = mock[CacheRepository]
+          val cacheRepository = mock(classOf[CacheRepository])
           when {
             cacheRepository.getRequiredPartial()(any())
           } thenReturn Html("<div>Test</div>")
@@ -70,7 +69,7 @@ class WebChatClientImplSpec extends WordSpecLike {
 
       "there is no data returned" should {
         "return a None that will indicate the user that there is something wrong" in {
-          val cacheRepository = mock[CacheRepository]
+          val cacheRepository = mock(classOf[CacheRepository])
           when {
             cacheRepository.getRequiredPartial()(any())
           } thenReturn Html("")
@@ -87,7 +86,7 @@ class WebChatClientImplSpec extends WordSpecLike {
     "requesting HMRC chat skin element" should {
       "the request is successful" should {
         "return all elements as HTML" in {
-          val cacheRepository = mock[CacheRepository]
+          val cacheRepository = mock(classOf[CacheRepository])
           when {
             cacheRepository.getHMRCChatSkinPartial(any())(any())
           } thenReturn Html("<div>Test</div>")
@@ -100,7 +99,7 @@ class WebChatClientImplSpec extends WordSpecLike {
       }
       "there is no data returned" should {
         "return a None that will indicate the user that there is something wrong" in {
-          val cacheRepository = mock[CacheRepository]
+          val cacheRepository = mock(classOf[CacheRepository])
           when {
             cacheRepository.getHMRCChatSkinPartial(any())(any())
           } thenReturn Html("")
@@ -116,7 +115,7 @@ class WebChatClientImplSpec extends WordSpecLike {
 
     "requesting chat container element" should {
       "return the html element when we specify an id" in {
-        val cacheRepository = mock[CacheRepository]
+        val cacheRepository = mock(classOf[CacheRepository])
         when {
           cacheRepository.getContainerPartial(any())(any())
         } thenReturn {
@@ -140,12 +139,12 @@ class WebChatClientImplSpec extends WordSpecLike {
       "microservice.services.digital-engagement-platform-partials.protocol" -> "http",
       "dep-webchat.enabled" -> false
     ).overrides(
-      bind[TestCoreGet].toInstance(mock[TestCoreGet]) // for case where we test injected instance
+      bind[TestCoreGet].toInstance(mock(classOf[TestCoreGet])) // for case where we test injected instance
     )
     val configuration = new WebChatConfig(builder.configuration)
     "requesting required elements" should {
       "return empty" in {
-        val cacheRepository = mock[CacheRepository]
+        val cacheRepository = mock(classOf[CacheRepository])
         when {
           cacheRepository.getRequiredPartial()(any())
         } thenReturn Html("<div>Test</div>")
@@ -157,7 +156,7 @@ class WebChatClientImplSpec extends WordSpecLike {
 
     "requesting hmrc chat skin element" should {
       "return empty" in {
-        val cacheRepository = mock[CacheRepository]
+        val cacheRepository = mock(classOf[CacheRepository])
         when {
           cacheRepository.getHMRCChatSkinPartial(any())(any())
         } thenReturn Html("<div>Test</div>")
@@ -169,7 +168,7 @@ class WebChatClientImplSpec extends WordSpecLike {
 
     "requesting chat container elements" should {
       "return empty" in {
-        val cacheRepository = mock[CacheRepository]
+        val cacheRepository = mock(classOf[CacheRepository])
         when {
           cacheRepository.getContainerPartial(meq("ID"))(any())
         } thenReturn Html("<div>Test</div>")
