@@ -30,7 +30,7 @@ object PlayCrossCompilation extends AbstractPlayCrossCompilation(defaultPlayVers
 
   def crossScalaVersions: Seq[String] = {
     playVersion match {
-      case Play28 => Seq("2.12.15")
+      case Play28 => Seq("2.12.13")
       case _ => throw new RuntimeException(
         s"PlayCrossCompilation.crossScalaVersions: Unsupported play version: $playVersion. You need to add a case for this version in order to build."
       )
