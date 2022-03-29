@@ -8,10 +8,10 @@ object AppDependencies {
   )
 
   lazy val test: Seq[ModuleID] = Seq(
-    "com.typesafe.play"     %% "play-test"    % "2.8.13"  % "test",
+    "com.typesafe.play"     %% "play-test"    % "2.8.14"  % "test",
     "org.pegdown"           %  "pegdown"      % "1.6.0"   % "test",
-    "org.scalatest"         %% "scalatest"    % "3.2.3"   % "test",
+    "org.scalatest"         %% "scalatest"    % "3.2.11"  % "test",
     "org.mockito"           %  "mockito-core" % "4.4.0"   % "test",
-    "com.vladsch.flexmark"  % "flexmark-all"  % "0.35.10" % "test"
+    "com.vladsch.flexmark"  % "flexmark-all"  % "0.62.2"  % "test"
   )
 }
