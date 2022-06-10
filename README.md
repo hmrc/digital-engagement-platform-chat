@@ -45,9 +45,18 @@ resolvers += (
 This library requires the digital-engagement-platform-partials to be running locally. This can be done by running the following service manager command:
 `sm --start DIGITAL_ENGAGEMENT_PLATFORM_PARTIALS -r`
 
-### Testing
+## Running through Service Manager
+Ensure your service manager config is up to date, and run the following command:
+
+`sm --start DIGITAL_ENGAGEMENT_PLATFORM_PARTIALS -r`
+
+Add the following dependency to the AppDependencies.scala file of the service requiring the Nuance DA/webchat (check latest version):
+`"uk.gov.hmrc"     %% "digital-engagement-platform-chat" % "X.XX.X-play-XX"`
+
+
+## Testing
 To run the unit tests use: 
 `sbt test`
 
-### License
+## License
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
