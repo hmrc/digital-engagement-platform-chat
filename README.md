@@ -1,7 +1,7 @@
 # digital-engagement-platform-chat
 
 ## About
-This library can be used to help with the integration of Nuance's Digital Assistant(DA) and Webchat. Services that wish to provide an embedded or popup DA/Webchat on their pages should make use of this library to ensure they have the required html elements.
+This library can be used to help with the integration of Nuance's Digital Assistant(DA) and Webchat. Services that wish to provide an embedded or popup DA/Webchat on their pages should make use of this library to ensure they have the required HTML elements.
 
 The library provides a separate call for each through a single interface:
 
