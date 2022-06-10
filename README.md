@@ -1,47 +1,53 @@
 # digital-engagement-platform-chat
 
-Chat library plugin to regime service which calls partials service to retrieve page
-content / skin service to retrieve either the Nuance chatskin or HMRC chatskin.
+## About
+This library can be used to help with the integration of Nuance's Digital Assistant(DA) and Webchat. Services that wish to provide an embedded or popup DA/Webchat on their pages should make use of this library to ensure they have the required html elements.
 
-The capability to pull the HMRC chatskin was introduced with version "0.25.0-play-28".
+The library provides a separate call for each through a single interface:
 
-The decision on what type of chatskin to use is made on a frontend service by calling one of
-the following methods in the WebChatClientImpl class.
+WebChatClient Interface
+```
+trait WebChatClient {
+def loadRequiredElements()(implicit request: Request[_]): Option[Html]
+def loadHMRCChatSkinElement(partialType: String)(implicit request: Request[_]): Option[Html]
+def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html]
+}
+```
+Each call returns a block of HTML to be inserted into a page.
 
-### Webchat and Digital Assistent Version 1
-loadRequiredElements()
+loadRequiredElements and loadWebChatContainer are methods which a frontend service should use regardless of the type of DA/Webchat required. loadHMRCChatSkinElement should only be used if the service would like to use HMRC's customised skin.
 
-loadWebChatContainer(id)
+## Running from source
+Clone the repository using SSH:
 
-### Webchat and Digital Assistent Version 2
-loadRequiredElements()
+`git@github.com:hmrc/digital-engagement-platform-chat.git`
 
-loadWebChatContainer(id)
+cd into your digital-engagement-platform.chat directory
 
-### HMRC Webchat and Digital Assistent Version 3
-loadRequiredElements()
-loadWebChatContainer(id)
+`sbt publishLocal`
 
-and one of the following
+This will publish a local copy of the library to your local ivy cache. Take note of the SNAPSHOT version created.
 
-loadHMRCChatSkinElement("embedded")
+Update AppDependencies.scala on the service you're testing the library on to use the SNAPSHOT version now held in your local ivy cache.
 
-loadHMRCChatSkinElement("popup")
+Example
+`"uk.gov.hmrc"     %% "digital-engagement-platform-chat" % "0.28.0-play-28-SNAPSHOT"`
 
-### Run the application
-The application runs on port 9193
+NOTE - REMEMBER TO REVERT THIS BACK WHEN FINISHED LOCAL DEVELOPMENT!
 
-To run all the DEP services executed the following command
-**sm --start DIGITAL_ENGAGEMENT_PLATFORM_ALL -r**
+If this does not work try adding the following resolver to plugins.sbt
+```
+resolvers += (
+  "Local Maven Repository".at(s"file:///home/yourpath/.ivy2/local")
+  )
+```
 
-To run digital-engagement-platform-chat locally:
-run **sm --stop digital-engagement-platform-chat**
-run **sbt run**
+This library requires the digital-engagement-platform-partials to be running locally. This can be done by running the following service manager command:
+`sm --start DIGITAL_ENGAGEMENT_PLATFORM_PARTIALS -r`
 
 ### Testing
-To run the unit test use **sbt test**
-
+To run the unit tests use: 
+`sbt test`
 
 ### License
-
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
