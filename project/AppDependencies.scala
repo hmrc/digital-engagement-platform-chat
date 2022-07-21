@@ -4,7 +4,7 @@ object AppDependencies {
 
   lazy val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc" %% "play-partials"            % "8.3.0-play-28",
-    "uk.gov.hmrc" %% "bootstrap-common-play-28" % "5.24.0"
+    "uk.gov.hmrc" %% "bootstrap-common-play-28" % "6.3.0"
   )
 
   lazy val test: Seq[ModuleID] = Seq(
