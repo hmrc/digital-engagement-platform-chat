@@ -8,9 +8,9 @@ The library provides a separate call for each through a single interface:
 WebChatClient Interface
 ```
 trait WebChatClient {
-def loadRequiredElements()(implicit request: Request[_]): Option[Html]
-def loadHMRCChatSkinElement(partialType: String)(implicit request: Request[_]): Option[Html]
-def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html]
+  def loadRequiredElements()(implicit request: Request[_]): Option[Html]
+  def loadHMRCChatSkinElement(partialType: String)(implicit request: Request[_]): Option[Html]
+  def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html]
 }
 ```
 Each call returns a block of HTML to be inserted into a page.
