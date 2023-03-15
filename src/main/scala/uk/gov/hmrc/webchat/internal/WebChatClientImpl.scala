@@ -26,24 +26,22 @@ import uk.gov.hmrc.webchat.repositories.CacheRepository
 class WebChatClientImpl @Inject()(cacheRepository: CacheRepository,
                                   webChatConfig: WebChatConfig)
   extends WebChatClient {
-  def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
-    getPartial (() => cacheRepository.getRequiredPartial())
-  }
+  def loadRequiredElements()(implicit request: Request[_]): Option[Html] =
+    getPartial(() => cacheRepository.getRequiredPartial())
 
-  def loadHMRCChatSkinElement(partialType: String)(implicit request: Request[_]): Option[Html] = {
-    getPartial (() => cacheRepository.getHMRCChatSkinPartial(partialType))
-  }
+  def loadHMRCChatSkinElement(partialType: String)(implicit request: Request[_]): Option[Html] =
+    getPartial(() => cacheRepository.getHMRCChatSkinPartial(partialType))
 
-  def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html] = {
-    getPartial (() => cacheRepository.getContainerPartial(id))
-  }
+  def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]): Option[Html] =
+    getPartial(() => cacheRepository.getContainerPartial(id))
 
-  private def getPartial(get: () => Html): Option[Html] = {
+  private def getPartial(get: () => Html)(implicit request: Request[_]): Option[Html] =
     if (webChatConfig.enabled) {
       val result = get()
-      if (result.body.isEmpty) None else Some(result)
-    } else {
+      if (result.body.isEmpty)
+        None
+      else
+        Some(Html(result.body.replace("{{NONCE_ATTR}}", views.html.helper.CSPNonce.attr.body)))
+    } else
       None
-    }
-  }
 }
