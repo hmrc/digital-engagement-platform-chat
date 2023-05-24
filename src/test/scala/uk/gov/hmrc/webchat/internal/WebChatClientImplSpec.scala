@@ -111,6 +111,19 @@ class WebChatClientImplSpec extends AnyWordSpecLike with Matchers {
           verify(cacheRepository).getHMRCChatSkinPartial(meq("test"))(any())
         }
       }
+
+      "return a default value of popup, given an empty string calls the loadHMRCChatSkinElement method" in {
+        val cacheRepository = mock(classOf[CacheRepository])
+        when {
+          cacheRepository.getHMRCChatSkinPartial(any())(any())
+        } thenReturn Html("popup")
+
+        val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
+
+        webChatClient.loadHMRCChatSkinElement("") shouldBe Some(Html("popup"))
+
+        verify(cacheRepository).getHMRCChatSkinPartial(meq("popup"))(any())
+      }
     }
 
     "requesting chat container element" should {

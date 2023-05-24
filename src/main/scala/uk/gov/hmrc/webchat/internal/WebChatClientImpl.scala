@@ -31,7 +31,12 @@ class WebChatClientImpl @Inject()(cacheRepository: CacheRepository,
   }
 
   def loadHMRCChatSkinElement(partialType: String)(implicit request: Request[_]): Option[Html] = {
-    getPartial (() => cacheRepository.getHMRCChatSkinPartial(partialType))
+    val finalPartialType = partialType match {
+      case "" => "popup"
+      case partialType => partialType
+    }
+
+    getPartial (() => cacheRepository.getHMRCChatSkinPartial(finalPartialType))
   }
 
   def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html] = {
