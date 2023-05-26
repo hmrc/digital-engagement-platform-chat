@@ -97,30 +97,29 @@ class WebChatClientImplSpec extends AnyWordSpecLike with Matchers {
           verify(cacheRepository).getHMRCChatSkinPartial(meq("popup"))(any())
         }
       }
-      "there is no data returned" should {
-        "return a None that will indicate the user that there is something wrong" in {
-          val cacheRepository = mock(classOf[CacheRepository])
-          when {
-            cacheRepository.getHMRCChatSkinPartial(any())(any())
-          } thenReturn Html("")
 
-          val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
+      "return a value of embedded, given the loadHMRCChatSkinElement method is called with embedded" in {
+        val cacheRepository = mock(classOf[CacheRepository])
+        when {
+          cacheRepository.getHMRCChatSkinPartial(any())(any())
+        } thenReturn Html("<div>Test</div>")
 
-          webChatClient.loadHMRCChatSkinElement("test") shouldBe None
+        val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
 
-          verify(cacheRepository).getHMRCChatSkinPartial(meq("test"))(any())
-        }
+        webChatClient.loadHMRCChatSkinElement("embedded") shouldBe Some(Html("<div>Test</div>"))
+
+        verify(cacheRepository).getHMRCChatSkinPartial(meq("embedded"))(any())
       }
 
       "return a default value of popup, given an empty string calls the loadHMRCChatSkinElement method" in {
         val cacheRepository = mock(classOf[CacheRepository])
         when {
           cacheRepository.getHMRCChatSkinPartial(any())(any())
-        } thenReturn Html("popup")
+        } thenReturn Html("<div>Test</div>")
 
         val webChatClient = new WebChatClientImpl(cacheRepository, configuration)
 
-        webChatClient.loadHMRCChatSkinElement("") shouldBe Some(Html("popup"))
+        webChatClient.loadHMRCChatSkinElement("") shouldBe Some(Html("<div>Test</div>"))
 
         verify(cacheRepository).getHMRCChatSkinPartial(meq("popup"))(any())
       }

@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.webchat.internal
 
+import play.api.Logging
+
 import javax.inject.Inject
 import play.api.mvc.Request
 import play.twirl.api.Html
@@ -25,15 +27,18 @@ import uk.gov.hmrc.webchat.repositories.CacheRepository
 
 class WebChatClientImpl @Inject()(cacheRepository: CacheRepository,
                                   webChatConfig: WebChatConfig)
-  extends WebChatClient {
+  extends WebChatClient with Logging {
   def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
     getPartial (() => cacheRepository.getRequiredPartial())
   }
 
   def loadHMRCChatSkinElement(partialType: String)(implicit request: Request[_]): Option[Html] = {
     val finalPartialType = partialType match {
-      case "" => "popup"
-      case partialType => partialType
+      case "popup" => "popup"
+      case "embedded" => "embedded"
+      case partialType =>
+        logger.warn(s"invalid partial type '$partialType' passed to loadHMRCChatSkinElement, defaulting to popup")
+        "popup"
     }
 
     getPartial (() => cacheRepository.getHMRCChatSkinPartial(finalPartialType))
