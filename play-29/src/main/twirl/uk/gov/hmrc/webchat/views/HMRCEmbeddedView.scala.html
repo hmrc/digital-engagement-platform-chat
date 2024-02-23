@@ -21,6 +21,6 @@
 
 @()(implicit request: RequestHeader)
 
-<script language="javascript" id="hmrc-webchat-tag" src=@{appConfig.hmrcSkinJSUrl}></script>
-<link rel="stylesheet" href='@{appConfig.hmrcSkinEmbeddedCSSUrl}' type="text/css">
+<script {{NONCE_ATTR}} language="javascript" id="hmrc-webchat-tag" src=@{appConfig.hmrcSkinJSUrl}></script>
+<link {{NONCE_ATTR}} rel="stylesheet" href='@{appConfig.hmrcSkinEmbeddedCSSUrl}' type="text/css">
 <div class="dav3"></div>

@@ -21,7 +21,7 @@
 
 @(nuanceData: EncryptedNuanceData)
 
-<script>
+<script> {{NONCE_ATTR}}
     var nuanceData = {
         "mdtpdfSessionID" : "@{nuanceData.nuanceSessionId}",
         "mdtpSessionID" : "@{nuanceData.mdtpSessionId}",
@@ -29,4 +29,4 @@
     }
 </script>
 
-<script id="webchat-tag" src=@{appConfig.nuanceUrl}></script>
+<script {{NONCE_ATTR}} id="webchat-tag" src=@{appConfig.nuanceUrl}></script>
