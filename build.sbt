@@ -1,19 +1,29 @@
-import sbt._
+import sbt.*
+import sbt.Keys.sourceDirectories
 
 val appName = "digital-engagement-platform-chat"
 
-lazy val library = Project(appName, file("."))
+val scala2_12 = "2.12.15"
+val scala2_13 = "2.13.8"
+
+ThisBuild / scalaVersion       := scala2_13
+ThisBuild / majorVersion       := 1
+ThisBuild / isPublicArtefact   := true
+
+lazy val library = (project in file("."))
+  .settings(publish / skip := true)
   .settings(
-    majorVersion := 0,
-    crossScalaVersions := PlayCrossCompilation.crossScalaVersions,
-    scalaVersion := PlayCrossCompilation.scalaVersion,
-    isPublicArtefact := true,
-    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
-    libraryDependencies ++= PlayCrossCompilation.dependencies(
-        shared = sharedLibs
-    ),
     resolvers += Resolver.jcenterRepo
   )
-  .settings(PlayCrossCompilation.playCrossCompilationSettings)
+  .aggregate(
+    play29
+  )
+
+lazy val play29 = Project("digital-engagement-platform-chat-29", file("play-29"))
+  .enablePlugins(SbtTwirl, RoutesCompiler, BuildInfoPlugin)
+  .settings(
+    libraryDependencies ++= AppDependencies.play29 ++ AppDependencies.play29Test ++ AppDependencies.test,
+    Compile / TwirlKeys.compileTemplates / sourceDirectories += baseDirectory.value / s"src/main/twirl"
+  )
 
 val sharedLibs = Seq()
