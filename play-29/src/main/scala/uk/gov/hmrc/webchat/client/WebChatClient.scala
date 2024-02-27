@@ -18,35 +18,38 @@ package uk.gov.hmrc.webchat.client
 
 
 import play.api.Logging
-import play.api.mvc.{AnyContent, Request}
+import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.webchat.models.EncryptedNuanceData
 import uk.gov.hmrc.webchat.services.NuanceEncryptionService
+import uk.gov.hmrc.webchat.views.html.{HMRCEmbeddedView, HMRCPopupView, NuanceTagElementView, NuanceView}
 
-trait WebChatClient extends Logging {
-  val nuanceEncryptionService: NuanceEncryptionService
-  val nuanceView: EncryptedNuanceData => Html
-  val popupChatSkinElement: Html
-  val embeddedChatSkinElement: Html
-  val webChatContainer: String => Html
-  def loadRequiredElements()(implicit request: Request[AnyContent]): Option[Html] = {
-    Some(nuanceView(encryptedNuanceData))
+import javax.inject.Inject
+
+class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
+                              requiredElements: NuanceView,
+                              popupChatSkinElement: HMRCPopupView,
+                              embeddedChatSkinElement: HMRCEmbeddedView,
+                              nuanceContainerElement: NuanceTagElementView) extends Logging {
+
+  def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
+    Some(requiredElements(encryptedNuanceData))
   }
   def loadHMRCChatSkinElement(partialType: String)(implicit request: Request[_]): Option[Html] = {
     partialType match {
-      case "popup" => Some(popupChatSkinElement)
-      case "embedded" => Some(embeddedChatSkinElement)
+      case "popup" => Some(popupChatSkinElement())
+      case "embedded" => Some(embeddedChatSkinElement())
       case partialType =>
         logger.warn(s"invalid partial type '$partialType' passed to loadHMRCChatSkinElement, defaulting to popup")
-       Some(popupChatSkinElement)
+       Some(popupChatSkinElement())
     }
   }
   def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html] = {
-    Some(webChatContainer(id))
+    Some(nuanceContainerElement(id))
   }
 
-  private def encryptedNuanceData(implicit request: Request[AnyContent]) =
+  private def encryptedNuanceData(implicit request: Request[_]) =
     EncryptedNuanceData.create(
       nuanceEncryptionService,
       HeaderCarrierConverter.fromRequestAndSession(request, request.session)
