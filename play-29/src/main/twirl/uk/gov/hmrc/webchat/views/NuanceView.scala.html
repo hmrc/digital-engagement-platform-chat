@@ -21,7 +21,7 @@
 
 @(nuanceData: EncryptedNuanceData)
 
-<script> {{NONCE_ATTR}}
+<script {{NONCE_ATTR}}>
     var nuanceData = {
         "mdtpdfSessionID" : "@{nuanceData.nuanceSessionId}",
         "mdtpSessionID" : "@{nuanceData.mdtpSessionId}",
