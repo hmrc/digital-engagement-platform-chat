@@ -34,19 +34,19 @@ class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
                               nuanceContainerElement: NuanceTagElementView) extends Logging {
 
   def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
-    Some(requiredElements(encryptedNuanceData))
+    Some(withCSPNonce(requiredElements(encryptedNuanceData)))
   }
   def loadHMRCChatSkinElement(partialType: String)(implicit request: Request[_]): Option[Html] = {
     partialType match {
-      case "popup" => Some(popupChatSkinElement())
-      case "embedded" => Some(embeddedChatSkinElement())
+      case "popup" => Some(withCSPNonce(popupChatSkinElement()))
+      case "embedded" => Some(withCSPNonce(embeddedChatSkinElement()))
       case partialType =>
         logger.warn(s"invalid partial type '$partialType' passed to loadHMRCChatSkinElement, defaulting to popup")
-       Some(popupChatSkinElement())
+       Some(withCSPNonce(popupChatSkinElement()))
     }
   }
   def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html] = {
-    Some(nuanceContainerElement(id))
+    Some(withCSPNonce(nuanceContainerElement(id)))
   }
 
   private def encryptedNuanceData(implicit request: Request[_]) =
@@ -54,4 +54,7 @@ class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
       nuanceEncryptionService,
       HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     )
+
+  private def withCSPNonce(fragment: Html)(implicit request: Request[_]): Html =
+    Html(fragment.body.replace("{{NONCE_ATTR}}", views.html.helper.CSPNonce.attr.body))
 }
