@@ -27,14 +27,6 @@ class WebChatConfig @Inject()(configuration: Configuration) {
   private val defaultCoreGetClass = "uk.gov.hmrc.play.bootstrap.http.HttpClient"
   private val defaultContainerIds = Seq("HMRC_Fixed_1", "HMRC_Anchored_1")
 
-  private val path = "microservice.services.digital-engagement-platform-partials"
-
-  lazy val partialsBaseUrl : String = configuration.get[Service](path) + "/engagement-platform-partials"
-  lazy val refreshSeconds : Int = configuration.getOptional[Int](s"$path.cache.refreshAfter").getOrElse(defaultRefreshSeconds)
-  lazy val expireSeconds : Int = configuration.getOptional[Int](s"$path.cache.expireAfter").getOrElse(defaultExpireSeconds)
-  lazy val retrievalTimeout : Int = configuration.getOptional[Int](s"$path.cache.retrievalTimeout").getOrElse(defaultRetrievalTimeoutSeconds)
-  lazy val maxCacheEntries : Int = configuration.getOptional[Int](s"$path.cache.maxEntries").getOrElse(defaultMaxCacheEntries)
-  lazy val coreGetClass: String = configuration.getOptional[String](s"$path.coreGetClass").getOrElse(defaultCoreGetClass)
   lazy val containerIds: Seq[String] = configuration.getOptional[Seq[String]]("dep-webchat.container-ids").getOrElse(defaultContainerIds)
   lazy val enabled: Boolean = configuration.getOptional[Boolean]("dep-webchat.enabled").getOrElse(true)
 
