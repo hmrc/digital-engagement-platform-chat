@@ -11,6 +11,16 @@ object AppDependencies {
     "uk.gov.hmrc"           %% "bootstrap-test-play-29"   % "8.4.0"   % "test"
   )
 
+  val play30 = Seq(
+    "uk.gov.hmrc" %% "play-partials-play-30"    % "9.1.0",
+    "uk.gov.hmrc" %% "bootstrap-common-play-30" % "8.4.0"
+  )
+
+  val play30Test = Seq(
+    "com.typesafe.play"     %% "play-test"                % "2.9.0"  % "test",
+    "uk.gov.hmrc"           %% "bootstrap-test-play-30"   % "8.4.0"   % "test"
+  )
+
   lazy val test: Seq[ModuleID] = Seq(
     "org.pegdown"           %  "pegdown"                  % "1.6.0"   % "test",
     "org.scalatest"         %% "scalatest"                % "3.2.12"  % "test",
