@@ -28,7 +28,7 @@ lazy val play29 = Project("digital-engagement-platform-chat-29", file("play-29")
     TwirlKeys.constructorAnnotations += "@javax.inject.Inject()"
   )
 
-lazy val play30 = Project("digital-engagement-platform-chat-29", file("play-29"))
+lazy val play30 = Project("digital-engagement-platform-chat-30", file("play-30"))
   .enablePlugins(SbtTwirl, RoutesCompiler, BuildInfoPlugin)
   .settings(
     libraryDependencies ++= AppDependencies.play30 ++ AppDependencies.play30Test ++ AppDependencies.test,
