@@ -5,8 +5,9 @@ val appName = "digital-engagement-platform-chat"
 
 val scala2_12 = "2.12.15"
 val scala2_13 = "2.13.12"
+val scala3_34 = "3.3.4"
 
-ThisBuild / scalaVersion       := scala2_13
+ThisBuild / scalaVersion       := scala3_34
 ThisBuild / majorVersion       := 1
 ThisBuild / isPublicArtefact   := true
 

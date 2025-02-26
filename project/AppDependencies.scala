@@ -2,8 +2,8 @@ import sbt._
 
 object AppDependencies {
   val play29 = Seq(
-    "uk.gov.hmrc" %% "play-partials-play-29"    % "9.1.0",
-    "uk.gov.hmrc" %% "bootstrap-common-play-29" % "8.4.0"
+    "uk.gov.hmrc" %% "play-partials-play-29"    % "10.0.0",
+    "uk.gov.hmrc" %% "bootstrap-common-play-29" % "9.5.0"
   )
 
   val play29Test = Seq(
@@ -12,8 +12,8 @@ object AppDependencies {
   )
 
   val play30 = Seq(
-    "uk.gov.hmrc" %% "play-partials-play-30"    % "9.1.0",
-    "uk.gov.hmrc" %% "bootstrap-common-play-30" % "8.4.0"
+    "uk.gov.hmrc" %% "play-partials-play-30"    % "10.0.0",
+    "uk.gov.hmrc" %% "bootstrap-common-play-30" % "9.5.0"
   )
 
   val play30Test = Seq(
