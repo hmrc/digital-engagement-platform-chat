@@ -17,17 +17,16 @@ lazy val library = (project in file("."))
     resolvers += Resolver.jcenterRepo
   )
   .aggregate(
-    play29,
     play30
   )
 
-lazy val play29 = Project("digital-engagement-platform-chat-29", file("play-29"))
-  .enablePlugins(SbtTwirl, RoutesCompiler, BuildInfoPlugin)
-  .settings(
-    libraryDependencies ++= AppDependencies.play29 ++ AppDependencies.play29Test ++ AppDependencies.test,
-    Compile / TwirlKeys.compileTemplates / sourceDirectories += baseDirectory.value / s"src/main/twirl",
-    TwirlKeys.constructorAnnotations += "@javax.inject.Inject()"
-  )
+//lazy val play29 = Project("digital-engagement-platform-chat-29", file("play-29"))
+//  .enablePlugins(SbtTwirl, RoutesCompiler, BuildInfoPlugin)
+//  .settings(
+//    libraryDependencies ++= AppDependencies.play29 ++ AppDependencies.play29Test ++ AppDependencies.test,
+//    Compile / TwirlKeys.compileTemplates / sourceDirectories += baseDirectory.value / s"src/main/twirl",
+//    TwirlKeys.constructorAnnotations += "@javax.inject.Inject()"
+//  )
 
 lazy val play30 = Project("digital-engagement-platform-chat-30", file("play-30"))
   .enablePlugins(SbtTwirl, RoutesCompiler, BuildInfoPlugin)
