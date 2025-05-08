@@ -7,7 +7,6 @@ object AppDependencies {
   )
 
   val play29Test = Seq(
-    "com.typesafe.play"     %% "play-test"                % "2.9.0"  % "test",
     "uk.gov.hmrc"           %% "bootstrap-test-play-29"   % "9.11.0"   % "test"
   )
 
@@ -17,7 +16,6 @@ object AppDependencies {
   )
 
   val play30Test = Seq(
-    "org.playframework"     %% "play-test"                % "3.0.5"  % "test",
     "uk.gov.hmrc"           %% "bootstrap-test-play-30"   % "9.11.0"   % "test"
   )
 

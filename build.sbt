@@ -24,6 +24,7 @@ lazy val library = (project in file("."))
 lazy val play29 = Project("digital-engagement-platform-chat-29", file("play-29"))
   .enablePlugins(SbtTwirl, RoutesCompiler, BuildInfoPlugin)
   .settings(
+    crossScalaVersions := Seq(scala2_13),
     libraryDependencies ++= AppDependencies.play29 ++ AppDependencies.play29Test ++ AppDependencies.test,
     Compile / TwirlKeys.compileTemplates / sourceDirectories += baseDirectory.value / s"src/main/twirl",
     TwirlKeys.constructorAnnotations += "@javax.inject.Inject()"
