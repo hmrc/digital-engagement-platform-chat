@@ -18,7 +18,7 @@ package uk.gov.hmrc.webchat.services
 
 import com.google.inject.Inject
 import play.api.Configuration
-import uk.gov.hmrc.crypto.{CryptoGCMWithKeysFromConfig, PlainText, Scrambled, Sha512Crypto}
+import uk.gov.hmrc.crypto.{SymmetricCryptoFactory, PlainText, Scrambled, Sha512Crypto}
 
 /**
   * Service for encrypting data to send to Nuance (Virtual Assistance)
@@ -33,7 +33,7 @@ case class NuanceEncryptionService @Inject()(configuration: Configuration) {
   private val baseSettingsKey = "request-body-encryption"
   private val hashingKey: String = configuration.get[String](s"$baseSettingsKey.hashing-key")
 
-  lazy val crypto: CryptoGCMWithKeysFromConfig = new CryptoGCMWithKeysFromConfig(
+  lazy val crypto = SymmetricCryptoFactory.aesGcmCryptoFromConfig(
     baseConfigKey = baseSettingsKey,
     config = configuration.underlying
   )
