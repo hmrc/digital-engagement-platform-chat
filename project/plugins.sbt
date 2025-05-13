@@ -7,5 +7,5 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.2.2")
 
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.6.3")
 
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.9.1")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.9.6")
 
