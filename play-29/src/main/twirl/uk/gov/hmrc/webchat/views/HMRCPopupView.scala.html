@@ -19,8 +19,10 @@
 
 @this(appConfig: WebChatConfig)
 
-@()(implicit request: RequestHeader)
+@(id : String = "")(implicit request: RequestHeader)
 
 <script {{NONCE_ATTR}} language="javascript" id="hmrc-webchat-tag" src=@{appConfig.hmrcSkinJSUrl}></script>
 <link {{NONCE_ATTR}} rel="stylesheet" href='@{appConfig.hmrcSkinPopupCSSUrl}' type="text/css">
 <div id="tc-nuance-chat-container"></div>
+<div id="dav4"></div>
+<div id="@id"></div>
