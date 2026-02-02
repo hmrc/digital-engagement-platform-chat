@@ -21,21 +21,28 @@ import play.api.Logging
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import uk.gov.hmrc.webchat.controllers.AuthFunction
 import uk.gov.hmrc.webchat.models.EncryptedNuanceData
 import uk.gov.hmrc.webchat.services.NuanceEncryptionService
 import uk.gov.hmrc.webchat.views.html.{HMRCEmbeddedView, HMRCPopupView, NuanceTagElementView, NuanceView}
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
                               requiredElements: NuanceView,
                               popupChatSkinElement: HMRCPopupView,
                               embeddedChatSkinElement: HMRCEmbeddedView,
-                              nuanceContainerElement: NuanceTagElementView) extends Logging {
+                              nuanceContainerElement: NuanceTagElementView,
+                              authFunction: AuthFunction)(implicit executionContext: ExecutionContext) extends Logging {
 
-  def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
-    Some(withCSPNonce(requiredElements(encryptedNuanceData)))
+
+  def loadRequiredElements()(implicit request: Request[_]): Future[Option[Html]] = {
+    encryptedNuanceData.map { encryptedData =>
+      Some(withCSPNonce(requiredElements(encryptedData)))
+    }
   }
+
   def loadHMRCChatSkinElement(partialType: String, id: String = "")(implicit request: Request[_]): Option[Html] = {
     partialType match {
       case "popup" => Some(withCSPNonce(popupChatSkinElement(id)))
@@ -49,11 +56,15 @@ class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
     Some(withCSPNonce(nuanceContainerElement(id)))
   }
 
-  private def encryptedNuanceData(implicit request: Request[_]) =
-    EncryptedNuanceData.create(
-      nuanceEncryptionService,
-      HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-    )
+  private def encryptedNuanceData(implicit request: Request[_]) = {
+    authFunction.getEnrolments(request, HeaderCarrierConverter.fromRequestAndSession(request, request.session))
+      .map(userProfile =>
+        EncryptedNuanceData.create(
+          nuanceEncryptionService,
+          HeaderCarrierConverter.fromRequestAndSession(request, request.session),
+          userProfile,
+        ))
+  }
 
   private def withCSPNonce(fragment: Html)(implicit request: Request[_]): Html =
     Html(fragment.body.replace("{{NONCE_ATTR}}", views.html.helper.CSPNonce.attr.body))

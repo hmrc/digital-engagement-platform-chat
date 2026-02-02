@@ -60,4 +60,5 @@ case class NuanceEncryptionService @Inject()(configuration: Configuration) {
     hashField(rawValue).map {
       char => if (char.isLetterOrDigit) char else ((char.toInt % 26) + 'A'.toInt).toChar
     }
+
 }
