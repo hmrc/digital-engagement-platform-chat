@@ -61,6 +61,4 @@ case class NuanceEncryptionService @Inject()(configuration: Configuration) {
       char => if (char.isLetterOrDigit) char else ((char.toInt % 26) + 'A'.toInt).toChar
     }
 
-  def getxid(): String =
-    authorised().
 }
