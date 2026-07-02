@@ -23,8 +23,10 @@ import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import uk.gov.hmrc.webchat.connectors.VerificationConnector
 import uk.gov.hmrc.webchat.controllers.AuthFunction
 import uk.gov.hmrc.webchat.models.EncryptedNuanceData
+import uk.gov.hmrc.webchat.models.verificationservice.UserVerificationRequest
 import uk.gov.hmrc.webchat.services.NuanceEncryptionService
 import uk.gov.hmrc.webchat.views.html.{HMRCEmbeddedView, HMRCPopupView, NuanceTagElementView, NuanceView}
 
@@ -36,6 +38,7 @@ class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
                               popupChatSkinElement: HMRCPopupView,
                               embeddedChatSkinElement: HMRCEmbeddedView,
                               nuanceContainerElement: NuanceTagElementView,
+                              verificationConnector: VerificationConnector,
                               val authConnector: AuthConnector)(implicit ec: ExecutionContext) extends AuthFunction with Logging {
 
   def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
@@ -49,6 +52,15 @@ class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
       .map {
       profile =>
         logger.info(s"Retrieved webchat user profile: ${profile.toLogString}")
+        
+        val verificationRequest = UserVerificationRequest(
+          userProfile = profile
+        )
+        
+        verificationConnector.sendVerificationDetails(verificationRequest).map(
+          response =>
+            logger.info(s"The service returned ${response.status}")
+        )
         Some(withCSPNonce(requiredElements(encryptedNuanceData)))
     }
   }

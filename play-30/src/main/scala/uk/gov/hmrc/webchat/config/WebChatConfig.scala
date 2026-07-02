@@ -33,6 +33,8 @@ class WebChatConfig @Inject()(configuration: Configuration) {
   lazy val preProdMode: Boolean = configuration.getOptional[Boolean]("pre-prod.mode").getOrElse(true)
   lazy val depSkinBaseUrl: String = configuration.get[String]("urls.digital-engagement-platform-skin")
 
+  private lazy val depVerificationBaseUrl: String = configuration.get[String]("urls.digital-engagement-platform-verification")
+
   lazy val nuanceUrl: String = if (preProdMode) {
     configuration.get[String]("urls.pre-production.nuance")
   } else {
@@ -42,4 +44,5 @@ class WebChatConfig @Inject()(configuration: Configuration) {
   lazy val hmrcSkinJSUrl: String = s"$depSkinBaseUrl/engagement-platform-skin/assets/javascripts/hmrcChatSkinBundle.js"
   lazy val hmrcSkinEmbeddedCSSUrl: String = s"$depSkinBaseUrl/engagement-platform-skin/assets/stylesheets/chat-ui-embedded.css"
   lazy val hmrcSkinPopupCSSUrl: String = s"$depSkinBaseUrl/engagement-platform-skin/assets/stylesheets/chat-ui-popup.css"
+  lazy val sendVerificationDetailsUrl: String = s"$depVerificationBaseUrl/user-verification"
 }

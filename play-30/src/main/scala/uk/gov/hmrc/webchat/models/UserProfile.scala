@@ -16,10 +16,13 @@
 
 package uk.gov.hmrc.webchat.models
 
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.auth.core.Enrolment
 
+import java.util.UUID
 
-case class UserProfile (enrolments: Seq[UserEnrolment]) {
+
+case class UserProfile (id: String, enrolments: Seq[UserEnrolment]) {
   
   def toLogString: String = enrolments.map { enrolment =>
     val identifiers = enrolment.identifiers
@@ -34,8 +37,18 @@ case class UserProfile (enrolments: Seq[UserEnrolment]) {
 
 case class UserEnrolment(serviceName: String, state: String, identifiers: Map[String, String])
 
+object UserEnrolment {
+  implicit val format: OFormat[UserEnrolment] = Json.format[UserEnrolment]
+}
+
 object UserProfile {
+
+  implicit val format: OFormat[UserProfile] = Json.format[UserProfile]
+  
+  private def uuid: String = UUID.randomUUID().toString
+  
   def from(enrolments: Set[Enrolment]): UserProfile = UserProfile(
+    id = uuid,
     enrolments.toSeq.map { enrolment =>
       UserEnrolment(serviceName = enrolment.key,
         state = enrolment.state,
