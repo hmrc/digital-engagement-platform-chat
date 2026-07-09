@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class VerificationConnector @Inject() (httpClientV2: HttpClientV2, appConfig: WebChatConfig)(implicit val ec: ExecutionContext) {
 
-  def sendVerificationDetails(request: UserVerificationRequest)(using hc: HeaderCarrier): Future[HttpResponse] = {
+  def sendVerificationDetails(request: UserVerificationRequest)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
 
     val url = url"${appConfig.sendVerificationDetailsUrl}"
     val requestBody = Json.toJson(request)
