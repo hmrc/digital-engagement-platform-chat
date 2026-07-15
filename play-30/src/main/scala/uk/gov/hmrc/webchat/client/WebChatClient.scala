@@ -48,7 +48,9 @@ class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
   def loadRequiredElementsWIthAuth()(implicit request: Request[_]): Future[Option[Html]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    retrieveUserProfile()
+    val sessionId = encryptedNuanceData.mdtpSessionId
+
+    retrieveUserProfile(sessionId)
       .map {
       profile =>
         logger.info(s"Retrieved webchat user profile: ${profile.toLogString}")

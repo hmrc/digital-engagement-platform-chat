@@ -26,9 +26,9 @@ import scala.concurrent.{ExecutionContext, Future}
 trait AuthFunction extends AuthorisedFunctions {
   val authConnector: AuthConnector
   
-  def retrieveUserProfile()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserProfile] =
+  def retrieveUserProfile(sessionId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserProfile] =
     authorised()
       .retrieve(Retrievals.allEnrolments) { allEnrolments =>
-        Future.successful(UserProfile.from(allEnrolments.enrolments))
+        Future.successful(UserProfile.from(allEnrolments.enrolments, sessionId))
       }
 }
