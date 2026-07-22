@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.webchat.controllers
 
+import play.api.Logging
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -23,12 +24,15 @@ import uk.gov.hmrc.webchat.models.UserProfile
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait AuthFunction extends AuthorisedFunctions {
+trait AuthFunction extends AuthorisedFunctions with Logging {
   val authConnector: AuthConnector
-  
-  def retrieveUserProfile(sessionId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserProfile] =
+
+  def retrieveUserProfile()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserProfile] = {
+    logger.info("Starting auth retrieval")
+
     authorised()
       .retrieve(Retrievals.allEnrolments) { allEnrolments =>
-        Future.successful(UserProfile.from(allEnrolments.enrolments, sessionId))
+        Future.successful(UserProfile.from(allEnrolments.enrolments))
       }
+  }
 }

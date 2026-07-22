@@ -36,6 +36,6 @@ class VerificationConnector @Inject() (httpClientV2: HttpClientV2, appConfig: We
     httpClientV2
       .post(url)
       .withBody(requestBody)
-      .execute[HttpResponse]()
+      .execute[HttpResponse]
   }
 }

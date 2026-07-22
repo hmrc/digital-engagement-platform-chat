@@ -20,14 +20,9 @@ package uk.gov.hmrc.webchat.client
 import play.api.Logging
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-import uk.gov.hmrc.webchat.connectors.VerificationConnector
-import uk.gov.hmrc.webchat.controllers.AuthFunction
 import uk.gov.hmrc.webchat.models.EncryptedNuanceData
-import uk.gov.hmrc.webchat.models.verificationservice.UserVerificationRequest
-import uk.gov.hmrc.webchat.services.NuanceEncryptionService
+import uk.gov.hmrc.webchat.services.{NuanceEncryptionService, WebChatVerificationService}
 import uk.gov.hmrc.webchat.views.html.{HMRCEmbeddedView, HMRCPopupView, NuanceTagElementView, NuanceView}
 
 import javax.inject.Inject
@@ -38,36 +33,16 @@ class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
                               popupChatSkinElement: HMRCPopupView,
                               embeddedChatSkinElement: HMRCEmbeddedView,
                               nuanceContainerElement: NuanceTagElementView,
-                              verificationConnector: VerificationConnector,
-                              val authConnector: AuthConnector)(implicit ec: ExecutionContext) extends AuthFunction with Logging {
+                              webChatVerificationService: WebChatVerificationService
+                             )(implicit ec: ExecutionContext) extends Logging {
 
   def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
+    logger.info("INSIDE loadRequiredElements")
+    webChatVerificationService.verifyUser()
     Some(withCSPNonce(requiredElements(encryptedNuanceData)))
   }
 
-  def loadRequiredElementsWIthAuth()(implicit request: Request[_]): Future[Option[Html]] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    val sessionId = encryptedNuanceData.mdtpSessionId
-
-    retrieveUserProfile(sessionId)
-      .map {
-      profile =>
-        logger.info(s"Retrieved webchat user profile: ${profile.toLogString}")
-        
-        val verificationRequest = UserVerificationRequest(
-          userProfile = profile
-        )
-        
-        verificationConnector.sendVerificationDetails(verificationRequest).map(
-          response =>
-            logger.info(s"The service returned ${response.status}")
-        )
-        Some(withCSPNonce(requiredElements(encryptedNuanceData)))
-    }
-  }
-
-  
   def loadHMRCChatSkinElement(partialType: String, id: String = "")(implicit request: Request[_]): Option[Html] = {
     partialType match {
       case "popup" => Some(withCSPNonce(popupChatSkinElement(id)))

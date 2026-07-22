@@ -22,8 +22,8 @@ import uk.gov.hmrc.auth.core.Enrolment
 import java.util.UUID
 
 
-case class UserProfile (sessionId: String, enrolments: Seq[UserEnrolment]) {
-  
+case class UserProfile (id: String, enrolments: Seq[UserEnrolment]) {
+
   def toLogString: String = enrolments.map { enrolment =>
     val identifiers = enrolment.identifiers
           .map { case (key, value) => s"$key=$value" }
@@ -44,9 +44,11 @@ object UserEnrolment {
 object UserProfile {
 
   implicit val format: OFormat[UserProfile] = Json.format[UserProfile]
-  
-  def from(enrolments: Set[Enrolment], sessionId: String): UserProfile = UserProfile(
-    sessionId = sessionId,
+
+  private def uuid: String = UUID.randomUUID().toString
+
+  def from(enrolments: Set[Enrolment]): UserProfile = UserProfile(
+    id = uuid,
     enrolments.toSeq.map { enrolment =>
       UserEnrolment(serviceName = enrolment.key,
         state = enrolment.state,
