@@ -45,35 +45,43 @@ class WebChatVerificationService @Inject()(
     logger.info("Starting webchat authentication")
 
     authorised()
-      .retrieve(
-        Retrievals.allEnrolments
-      ) {
+      .retrieve(Retrievals.allEnrolments) {
         enrolments =>
+          val profile = UserProfile.from(enrolments.enrolments)
 
-          val profile =
-            UserProfile.from(enrolments.enrolments)
-
-          logger.info(
-            s"Retrieved profile: ${profile.toLogString}"
+          logger.info(s"Retrieved profile: ${profile.toLogString}"
           )
 
-          val verificationRequest =
-            UserVerificationRequest(profile)
+          val verificationRequest = UserVerificationRequest(profile)
 
           verificationConnector
             .sendVerificationDetails(verificationRequest)
             .map { response =>
-              logger.info(
-                s"Verification response: ${response.status}"
+              logger.info(s"Verification response: ${response.status}"
               )
             }
       }
       .recover {
-        case ex =>
+        // Identity data unavailable / user not logged in
+        case ex: uk.gov.hmrc.auth.core.MissingBearerToken =>
+          logger.error("Authentication failed: Missing bearer token (identity unavailable)", ex)
+
+        // Session mismatch / authorisation failure
+        case ex: uk.gov.hmrc.auth.core.AuthorisationException =>
+          logger.error("Authentication failed: Authorisation failed or session mismatch", ex)
+
+        // Timeout
+        case ex: java.util.concurrent.TimeoutException =>
+          logger.error("Authentication failed: Identity service timed out", ex)
+
+        // Upstream auth/API failure
+        case ex: uk.gov.hmrc.http.UpstreamErrorResponse =>
           logger.error(
-            "Webchat authentication failed while retrieving user profile or saving verification details",
-            ex
-          )
+            s"Authentication failed: Upstream auth service returned ${ex.statusCode}", ex)
+
+        // Any other unexpected failure
+        case ex =>
+          logger.error("Authentication failed: Unexpected error retrieving identity", ex)
       }
   }
 }

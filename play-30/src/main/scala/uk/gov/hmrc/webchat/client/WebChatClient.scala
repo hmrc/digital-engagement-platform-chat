@@ -38,7 +38,12 @@ class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
 
   def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
     logger.info("INSIDE loadRequiredElements")
-    webChatVerificationService.verifyUser()
+    webChatVerificationService
+      .verifyUser()
+      .recover {
+        case ex =>
+          logger.error("Webchat verification failed, continuing to load chat", ex)
+      }
     Some(withCSPNonce(requiredElements(encryptedNuanceData)))
   }
 
