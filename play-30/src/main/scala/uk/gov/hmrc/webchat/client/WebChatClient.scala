@@ -21,6 +21,7 @@ import play.api.Logging
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import uk.gov.hmrc.webchat.config.WebChatConfig
 import uk.gov.hmrc.webchat.models.EncryptedNuanceData
 import uk.gov.hmrc.webchat.services.{NuanceEncryptionService, WebChatVerificationService}
 import uk.gov.hmrc.webchat.views.html.{HMRCEmbeddedView, HMRCPopupView, NuanceTagElementView, NuanceView}
@@ -33,16 +34,21 @@ class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
                               popupChatSkinElement: HMRCPopupView,
                               embeddedChatSkinElement: HMRCEmbeddedView,
                               nuanceContainerElement: NuanceTagElementView,
-                              webChatVerificationService: WebChatVerificationService
+                              webChatVerificationService: WebChatVerificationService,
+                              appConfig: WebChatConfig
                              )(implicit ec: ExecutionContext) extends Logging {
 
   def loadRequiredElements()(implicit request: Request[_]): Option[Html] = {
+    val sessionId = encryptedNuanceData.nuanceSessionId
     logger.info("INSIDE loadRequiredElements")
-    webChatVerificationService
-      .verifyUser()
-      .recover {
-        case ex =>
-          logger.error("Webchat verification failed, continuing to load chat", ex)
+    if(appConfig.isIDNVenabled)
+      {
+        webChatVerificationService
+          .verifyUser(sessionId)
+          .recover {
+            case ex =>
+              logger.error("Webchat verification failed, continuing to load chat", ex)
+          }
       }
     Some(withCSPNonce(requiredElements(encryptedNuanceData)))
   }
@@ -54,7 +60,7 @@ class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
       case "embedded" => Some(withCSPNonce(embeddedChatSkinElement()))
       case partialType =>
         logger.warn(s"invalid partial type '$partialType' passed to loadHMRCChatSkinElement, defaulting to popup")
-       Some(withCSPNonce(popupChatSkinElement(id)))
+        Some(withCSPNonce(popupChatSkinElement(id)))
     }
   }
   def loadWebChatContainer(id: String = "HMRC_Fixed_1")(implicit request: Request[_]) : Option[Html] = {
@@ -70,3 +76,4 @@ class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
   private def withCSPNonce(fragment: Html)(implicit request: Request[_]): Html =
     Html(fragment.body.replace("{{NONCE_ATTR}}", views.html.helper.CSPNonce.attr.body))
 }
+

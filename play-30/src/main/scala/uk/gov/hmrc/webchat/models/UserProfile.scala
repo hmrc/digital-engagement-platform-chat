@@ -17,22 +17,25 @@
 package uk.gov.hmrc.webchat.models
 
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.auth.core.Enrolment
+import uk.gov.hmrc.auth.core.retrieve.ItmpName
+import uk.gov.hmrc.auth.core.{ConfidenceLevel, Enrolment}
 
-import java.util.UUID
 
-
-case class UserProfile (id: String, enrolments: Seq[UserEnrolment]) {
+case class UserProfile (sessionId: String,
+                        enrolments: Seq[UserEnrolment],
+                        confidenceLevel: ConfidenceLevel
+                        //itmpName: Option[ItmpName]
+                       ) {
 
   def toLogString: String = enrolments.map { enrolment =>
-    val identifiers = enrolment.identifiers
-          .map { case (key, value) => s"$key=$value" }
-          .mkString(",")
-            
-          s"service=${enrolment.serviceName}, state=${enrolment.state}, identifiers=[$identifiers]"
-      }
+      val identifiers = enrolment.identifiers
+        .map { case (key, value) => s"$key=$value" }
+        .mkString(",")
+
+      s"service=${enrolment.serviceName}, state=${enrolment.state}, identifiers=[$identifiers]"
+    }
     .mkString(";")
-  
+
 }
 
 case class UserEnrolment(serviceName: String, state: String, identifiers: Map[String, String])
@@ -43,16 +46,18 @@ object UserEnrolment {
 
 object UserProfile {
 
+  //implicit val itmpNameFormat: OFormat[ItmpName] = Json.format[ItmpName]
   implicit val format: OFormat[UserProfile] = Json.format[UserProfile]
 
-  private def uuid: String = UUID.randomUUID().toString
-
-  def from(enrolments: Set[Enrolment]): UserProfile = UserProfile(
-    id = uuid,
+  def from(enrolments: Set[Enrolment], sessionId: String, confidenceLevel: ConfidenceLevel): UserProfile = UserProfile(
+    sessionId = sessionId,
     enrolments.toSeq.map { enrolment =>
       UserEnrolment(serviceName = enrolment.key,
         state = enrolment.state,
         identifiers = enrolment.identifiers.map(identifier => identifier.key -> identifier.value).toMap)
-    }
+    },
+    confidenceLevel = confidenceLevel
+    //itmpName = itmpName  (TO DO: Get confirmation on name)
   )
 }
+

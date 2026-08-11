@@ -18,64 +18,57 @@ package uk.gov.hmrc.webchat.services
 
 import play.api.Logging
 import play.api.mvc.Request
-import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.auth.core.{AuthorisationException, MissingBearerToken}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.webchat.connectors.VerificationConnector
-import uk.gov.hmrc.webchat.models.UserProfile
 import uk.gov.hmrc.webchat.models.verificationservice.UserVerificationRequest
 
+import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WebChatVerificationService @Inject()(
-                                            val authConnector: AuthConnector,
+                                            userProfileProvider: UserProfileProvider,
                                             verificationConnector: VerificationConnector
                                           )(implicit ec: ExecutionContext)
-  extends uk.gov.hmrc.auth.core.AuthorisedFunctions
-    with Logging {
+  extends Logging {
 
 
-  def verifyUser()(implicit request: Request[_]): Future[Unit] = {
+  def verifyUser(sessionId: String)(implicit request: Request[_]): Future[Unit] = {
 
     implicit val hc: HeaderCarrier =
       HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     logger.info("Starting webchat authentication")
 
-    authorised()
-      .retrieve(Retrievals.allEnrolments) {
-        enrolments =>
-          val profile = UserProfile.from(enrolments.enrolments)
+    userProfileProvider
+      .retrieveUserProfile(sessionId)
+      .flatMap { profile =>
 
-          logger.info(s"Retrieved profile: ${profile.toLogString}"
-          )
+        logger.info(s"Retrieved profile: ${profile.toLogString}")
 
-          val verificationRequest = UserVerificationRequest(profile)
-
-          verificationConnector
-            .sendVerificationDetails(verificationRequest)
-            .map { response =>
-              logger.info(s"Verification response: ${response.status}"
-              )
-            }
+        verificationConnector
+          .sendVerificationDetails(UserVerificationRequest(profile))
+          .map { response =>
+            logger.info(s"Verification response: ${response.status}")
+          }
       }
       .recover {
         // Identity data unavailable / user not logged in
-        case ex: uk.gov.hmrc.auth.core.MissingBearerToken =>
+        case ex: MissingBearerToken =>
           logger.error("Authentication failed: Missing bearer token (identity unavailable)", ex)
 
         // Session mismatch / authorisation failure
-        case ex: uk.gov.hmrc.auth.core.AuthorisationException =>
+        case ex: AuthorisationException =>
           logger.error("Authentication failed: Authorisation failed or session mismatch", ex)
 
         // Timeout
-        case ex: java.util.concurrent.TimeoutException =>
+        case ex: TimeoutException =>
           logger.error("Authentication failed: Identity service timed out", ex)
 
         // Upstream auth/API failure
-        case ex: uk.gov.hmrc.http.UpstreamErrorResponse =>
+        case ex: UpstreamErrorResponse =>
           logger.error(
             s"Authentication failed: Upstream auth service returned ${ex.statusCode}", ex)
 

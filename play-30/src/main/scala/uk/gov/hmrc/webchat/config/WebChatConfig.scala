@@ -30,6 +30,7 @@ class WebChatConfig @Inject()(configuration: Configuration) {
   lazy val containerIds: Seq[String] = configuration.getOptional[Seq[String]]("dep-webchat.container-ids").getOrElse(defaultContainerIds)
   lazy val enabled: Boolean = configuration.getOptional[Boolean]("dep-webchat.enabled").getOrElse(true)
 
+  lazy val isIDNVenabled: Boolean = configuration.getOptional[Boolean]("pre-prod.mode").getOrElse(false)
   lazy val preProdMode: Boolean = configuration.getOptional[Boolean]("pre-prod.mode").getOrElse(true)
   lazy val depSkinBaseUrl: String = configuration.get[String]("urls.digital-engagement-platform-skin")
 
