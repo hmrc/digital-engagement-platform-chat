@@ -24,13 +24,15 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.webchat.config.WebChatConfig
 import uk.gov.hmrc.webchat.models.EncryptedNuanceData
 import uk.gov.hmrc.webchat.services.{NuanceEncryptionService, WebChatVerificationService}
-import uk.gov.hmrc.webchat.views.html.{HMRCEmbeddedView, HMRCPopupView, NuanceTagElementView, NuanceView}
+import uk.gov.hmrc.webchat.views.html.{HMRCEmbeddedView, HMRCPopupView, NuanceTagElementView, NuanceView, NavCXoneDAView,NavCXoneWebchatView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
                               requiredElements: NuanceView,
+                              cxOnerequiredDAElements: NavCXoneDAView,
+                              cxOnerequiredWebchatElements: NavCXoneWebchatView,
                               popupChatSkinElement: HMRCPopupView,
                               embeddedChatSkinElement: HMRCEmbeddedView,
                               nuanceContainerElement: NuanceTagElementView,
@@ -75,5 +77,18 @@ class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
 
   private def withCSPNonce(fragment: Html)(implicit request: Request[_]): Html =
     Html(fragment.body.replace("{{NONCE_ATTR}}", views.html.helper.CSPNonce.attr.body))
+
+  def loadCXoneRequiredElements(chatType: String)(implicit request: Request[_]): Option[Html] = {
+    val sessionId = encryptedNuanceData.nuanceSessionId
+    chatType match {
+      case "webchat" => Some(withCSPNonce(cxOnerequiredWebchatElements(encryptedNuanceData)))
+      case "embeddedDA" => Some(withCSPNonce(cxOnerequiredDAElements(encryptedNuanceData)))
+      case chatType =>
+        logger.warn(s"invalid partial type '$chatType' passed to loadCXoneRequiredElements, defaulting to webchat")
+        Some(withCSPNonce(cxOnerequiredWebchatElements(encryptedNuanceData)))
+    }
+
+
+  }
 }
 

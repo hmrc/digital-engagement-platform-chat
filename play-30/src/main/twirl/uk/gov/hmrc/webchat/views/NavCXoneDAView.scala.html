@@ -1,0 +1,77 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.webchat.config.WebChatConfig
+@import uk.gov.hmrc.webchat.models.EncryptedNuanceData
+
+@this(appConfig: WebChatConfig)
+
+@(nuanceData: EncryptedNuanceData)
+
+<script>
+    var nuanceData = {
+        "mdtpdfSessionID" : "mera custom data",
+        "mdtpSessionID" : "@{nuanceData.mdtpSessionId}",
+        "deviceID" : "@{nuanceData.deviceId}"
+    }
+
+</script>
+<script {{NONCE_ATTR}} >
+ var variableFromLibraryPage="variableFromLibraryPage";
+
+</script>
+
+<script {{NONCE_ATTR}}>
+ (function(n,u){
+  window.CXoneDfo=n,
+          window[n]=window[n]||function(){(window[n].q=window[n].q||[]).push(arguments)},window[n].u=u,
+          e=document.createElement("script"),e.type="module",e.src=u+"?"+Math.round(Date.now()/1e3/3600),
+          document.head.appendChild(e)
+ })('cxone','https://web-modules-de-uk3.nicecxone-sov2.uk/loader/1/loader.js');
+
+ cxone('init', '1027');
+ cxone('guide','init');
+ cxone('chat','showSendTranscript');
+ cxone('chat','setCustomerName', 'Elizabeth');
+ cxone('chat', 'openChatWindow');
+ cxone('chat', 'autoStartSession');
+ cxone('chat', 'setCustomCss',
+         '[data-selector="QUEUE_COUNTER_BAR"] {display: none !important;} ' +
+
+
+
+         '[data-testid="MoreHorizIcon"] {display: none !important;} ' +
+         '[data-selector="UPLOAD_ATTACHMENT_BUTTON_CONTAINER"] {display: none !important;} ' +
+         '[data-selector="HEADER_ACTION_MENU_BUTTON"]::before {content: "Menu" !important;} ' +
+/*         '[class*="ActionPanel_ActionPanel"] { justify-content: space-between !important; width: 100% !important;} ' +*/
+         '[data-selector-item="BACK_TO_CONVERSATION"] {display: none !important;} ' +
+         '[data-selector-item="START_NEW_CHAT"] {background-color: #0f7a52 !important; color: #ffffff !important;} ' +
+         '[data-selector-item="SEND_TRANSCRIPT"] {background-color: #0f7a52 !important; color: #ffffff !important;} ' +
+         '[data-selector-item="TERMS_OF_USE"] {background-color: #0f7a52 !important; color: #ffffff !important;} ' +
+         '[data-cy="end-chat-submit"] {background-color: #0f7a52 !important;} ' +
+         '[data-cy="end-chat-cancel"] {background-color: #f3f2f1 !important;} ' +
+         '[class*="CxOneLogo_Wrapper"] { display: none !important; } ' +
+
+         '[class*="ReplyBoxContent_Textarea"] { height: 80px !important; }');
+         cxone('chat','sendFirstMessageAutomatically', 'Hello');
+/* cxone('guide','setCustomFields', {customerName: {value:'Francis', hidden: true}});*/
+ /*cxone('chat', 'enableChatAlwaysOnline');*/
+ /*cxone('guide','hidePreSurvey');*/
+ cxone('chat','showTermsOfUse', 'Accessibility Statement (opens in a new tab)', 'externalLink' , 'http://yourdomain.com/terms-of-use');
+</script>
+
+<!--new script url to be added-->
+<!--<script {{NONCE_ATTR}} id="webchat-tag" src=@{appConfig.hmrcSkinJSUrl}></script>-->
