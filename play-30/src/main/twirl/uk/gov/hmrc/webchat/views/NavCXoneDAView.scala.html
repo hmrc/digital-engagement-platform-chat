@@ -58,9 +58,15 @@
          '[data-selector="HEADER_ACTION_MENU_BUTTON"]::before {content: "Menu" !important;} ' +
 /*         '[class*="ActionPanel_ActionPanel"] { justify-content: space-between !important; width: 100% !important;} ' +*/
          '[data-selector-item="BACK_TO_CONVERSATION"] {display: none !important;} ' +
-         '[data-selector-item="START_NEW_CHAT"] {background-color: #0f7a52 !important; color: #ffffff !important;} ' +
-         '[data-selector-item="SEND_TRANSCRIPT"] {background-color: #0f7a52 !important; color: #ffffff !important;} ' +
-         '[data-selector-item="TERMS_OF_USE"] {background-color: #0f7a52 !important; color: #ffffff !important;} ' +
+
+         '[data-selector="DROPDOWN_MENU"] { background-color: transparent !important; } ' +
+         '[data-selector="DROPDOWN_MENU"] .MuiMenu-paper { background-color: #f1f1f1 !important; min-width: 320px !important; max-width: calc(100% - 16px) !important; border-radius: 0 !important; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2) !important; } ' +
+         '[data-selector="DROPDOWN_MENU"] .MuiMenu-list { padding: 0 !important; } ' +
+         '[data-selector="DROPDOWN_MENU"] [role="menuitem"] { background-color: #EFEFEF !important; color: #000000 !important; padding: 12px 16px !important; min-height: 0 !important; border: 0 !important; white-space: normal !important; font-family: arial, sans-serif !important; font-size: 16px !important; line-height: 1.25 !important; } ' +
+         '[data-selector="DROPDOWN_MENU"] [role="menuitem"]:hover, [data-selector="DROPDOWN_MENU"] [role="menuitem"]:focus-visible, [data-selector="DROPDOWN_MENU"] [role="menuitem"].Mui-focusVisible { background-color: #B4DDFF !important; } ' +
+         '[data-selector="DROPDOWN_MENU"] [role="menuitem"] .MuiListItemText-primary, [data-selector="DROPDOWN_MENU"] [role="menuitem"] a { color: #000000 !important; text-decoration: none !important; font: inherit !important; word-break: normal !important; overflow-wrap: normal !important; } ' +
+         '[data-selector="DROPDOWN_MENU"] [role="menuitem"] .MuiListItemIcon-root, [data-selector="DROPDOWN_MENU"] .MuiDivider-root { display: none !important; } ' +
+
          '[data-cy="end-chat-submit"] {background-color: #0f7a52 !important;} ' +
          '[data-cy="end-chat-cancel"] {background-color: #f3f2f1 !important;} ' +
          '[class*="CxOneLogo_Wrapper"] { display: none !important; } ' +
