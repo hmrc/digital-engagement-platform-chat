@@ -42,6 +42,11 @@ class WebChatConfig @Inject()(configuration: Configuration) {
     configuration.get[String]("urls.production.nuance")
   }
 
+  lazy val cxOneGuideScriptLoaderUrl : String = configuration.get[String]("urls.digital-engagement-platform-cxOneGuideScriptLoaderUrl")
+  lazy val cxOneGuideEntryPoint: String = configuration.get[String]("urls.digital-engagement-platform-cxOneGuideEntryPoint")
+  lazy val cxOneGuideBrandId: String = configuration.get[String]("urls.digital-engagement-platform-cxOneGuideBrandId")
+  lazy val depCxoneAccessibilityStatementUrl: String = configuration.get[String]("urls.digital-engagement-platform-depCxoneAccessibilityStatementUrl")
+
   lazy val hmrcSkinJSUrl: String = s"$depSkinBaseUrl/engagement-platform-skin/assets/javascripts/hmrcChatSkinBundle.js"
   lazy val hmrcSkinEmbeddedCSSUrl: String = s"$depSkinBaseUrl/engagement-platform-skin/assets/stylesheets/chat-ui-embedded.css"
   lazy val hmrcSkinPopupCSSUrl: String = s"$depSkinBaseUrl/engagement-platform-skin/assets/stylesheets/chat-ui-popup.css"

@@ -15,24 +15,23 @@
  *@
 
 @import uk.gov.hmrc.webchat.config.WebChatConfig
-@import uk.gov.hmrc.webchat.models.EncryptedNuanceData
+@import uk.gov.hmrc.webchat.models.EnvironmentConfigData
 
 @this(appConfig: WebChatConfig)
 
-@(nuanceData: EncryptedNuanceData)
+@(niceEnvData: EnvironmentConfigData)
 
 <script>
-    var nuanceData = {
-        "mdtpdfSessionID" : "mera custom data",
-        "mdtpSessionID" : "@{nuanceData.mdtpSessionId}",
-        "deviceID" : "@{nuanceData.deviceId}"
+    var cxOneEnvData = {
+        "brandId" : "@{niceEnvData.brandId}",
+        "jsLoaderUrl" : "@{niceEnvData.loaderScriptUrl}",
+        "entryPoint" : "@{niceEnvData.entryPoint}",
+        "mdtpSessionID" : "@{niceEnvData.mdtpSessionId}",
+        "deviceID" : "@{niceEnvData.userDeviceId}"
     }
 
 </script>
-<script {{NONCE_ATTR}} >
- var variableFromLibraryPage="variableFromLibraryPage";
 
-</script>
 
 <script {{NONCE_ATTR}}>
  (function(n,u){
@@ -40,10 +39,12 @@
           window[n]=window[n]||function(){(window[n].q=window[n].q||[]).push(arguments)},window[n].u=u,
           e=document.createElement("script"),e.type="module",e.src=u+"?"+Math.round(Date.now()/1e3/3600),
           document.head.appendChild(e)
- })('cxone','https://web-modules-de-uk3.nicecxone-sov2.uk/loader/1/loader.js');
+ })('cxone','@{niceEnvData.loaderScriptUrl}');
 
- cxone('init', '1027');
+ cxone('init', '@{niceEnvData.brandId}');
  cxone('guide','init');
+ cxone('guide','openEntrypoint','@{niceEnvData.entryPoint}');
+ cxone('guide','hidePreSurvey');
  cxone('chat','showSendTranscript');
  cxone('chat','setCustomerName', 'Elizabeth');
  cxone('chat', 'openChatWindow');
@@ -86,7 +87,7 @@
          '[data-cy="end-chat-submit"] {background-color: #0f7a52 !important;} ' +
          '[class*="ReplyBoxContent_Textarea"] { height: 80px !important; }');
 
- cxone('chat','showTermsOfUse', 'Accessibility Statement (opens in a new tab)', 'externalLink' , 'http://yourdomain.com/terms-of-use');
+ cxone('chat','showTermsOfUse', 'Accessibility Statement (opens in a new tab)', 'externalLink' , '@{niceEnvData.accessibilityStatementLink}');
  cxone('chat', 'openChatWindow');
 </script>
 

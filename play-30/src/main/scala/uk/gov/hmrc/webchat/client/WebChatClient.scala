@@ -23,6 +23,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.webchat.config.WebChatConfig
 import uk.gov.hmrc.webchat.models.EncryptedNuanceData
+import uk.gov.hmrc.webchat.models.EnvironmentConfigData
 import uk.gov.hmrc.webchat.services.{NuanceEncryptionService, WebChatVerificationService}
 import uk.gov.hmrc.webchat.views.html.{HMRCEmbeddedView, HMRCPopupView, NuanceTagElementView, NuanceView, NavCXoneDAView,NavCXoneWebchatView}
 
@@ -78,14 +79,36 @@ class WebChatClient @Inject()(nuanceEncryptionService: NuanceEncryptionService,
   private def withCSPNonce(fragment: Html)(implicit request: Request[_]): Html =
     Html(fragment.body.replace("{{NONCE_ATTR}}", views.html.helper.CSPNonce.attr.body))
 
+  private def getEnvironmentConfigData(implicit request: Request[_])= {
+    val callingUrl= request.host+request.uri
+    var entryPoint=""
+    logger.info("INSIDE getEnvironmentConfigData and calling url is "+ callingUrl)
+    if (request.host.toLowerCase.contains("vat-online")) {
+      entryPoint="aa5534f0-e94a-4400-aa07-d8611a09fa8d"
+    }else if(request.host.toLowerCase.contains("wmr-ni-repayment")){
+      entryPoint = "7ed2cada-2342-40bd-ac3a-5c1867399d34"
+    }else if(request.host.toLowerCase.contains("self-assessment")){
+      entryPoint = "f765a392-926f-4c82-8825-d0a2062923e5"
+    }
+    EnvironmentConfigData.create(
+      appConfig.cxOneGuideBrandId,
+      appConfig.cxOneGuideScriptLoaderUrl ,
+      nuanceEncryptionService,
+      HeaderCarrierConverter.fromRequestAndSession(request, request.session),
+      /*appConfig.cxOneGuideEntryPoint*/entryPoint,
+      appConfig.depCxoneAccessibilityStatementUrl
+    )
+  }
+
+
   def loadCXoneRequiredElements(chatType: String)(implicit request: Request[_]): Option[Html] = {
-    val sessionId = encryptedNuanceData.nuanceSessionId
+    logger.info("INSIDE loadCXoneRequiredElements "+request.host+request.uri)
     chatType match {
-      case "webchat" => Some(withCSPNonce(cxOnerequiredWebchatElements(encryptedNuanceData)))
-      case "embeddedDA" => Some(withCSPNonce(cxOnerequiredDAElements(encryptedNuanceData)))
+      case "webchat" => Some(withCSPNonce(cxOnerequiredWebchatElements(getEnvironmentConfigData)))
+      case "embeddedDA" => Some(withCSPNonce(cxOnerequiredDAElements(getEnvironmentConfigData)))
       case chatType =>
         logger.warn(s"invalid partial type '$chatType' passed to loadCXoneRequiredElements, defaulting to webchat")
-        Some(withCSPNonce(cxOnerequiredWebchatElements(encryptedNuanceData)))
+        Some(withCSPNonce(cxOnerequiredWebchatElements(getEnvironmentConfigData)))
     }
 
 
